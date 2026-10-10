@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, Polygon, useMap } from "react-l
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { Link } from "react-router-dom";
-import { Star, MapPin, Bed, Bath, Maximize2, ExternalLink, GitCompare, Heart, X } from "lucide-react";
+import { Star, MapPin, Bed, Bath, Maximize2, ExternalLink, Heart, X } from "lucide-react";
 import type { Property } from "@/features/properties/data/mockProperties";
 import { VIETNAM_CITIES } from "@/features/properties/data/vietnamLocations";
 

@@ -19,7 +19,7 @@ export const PropertySearchHeader = ({
   onKeywordChange,
   activeFilterCount,
   activeFilterSummary,
-  onRemoveTag,
+  onRemoveTag: _onRemoveTag,
   onOpenFilterModal,
 }: PropertySearchHeaderProps) => {
   const [notifOpen, setNotifOpen] = useState(false);

@@ -32,7 +32,7 @@ import {
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { MOCK_PROPERTIES, type Property } from "@/features/properties/data/mockProperties";
+import { MOCK_PROPERTIES } from "@/features/properties/data/mockProperties";
 import { Button } from "@/components/ui/button";
 
 // Fix Leaflet marker icons in Vite

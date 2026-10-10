@@ -1,4 +1,4 @@
-import { useState, useId } from "react";
+import { useState } from "react";
 import {
   Building2,
   MapPin,
@@ -16,11 +16,6 @@ import {
   Maximize2,
   Eye,
   UserCheck,
-  Phone,
-  Tag,
-  Home,
-  Briefcase,
-  Layers,
   Check,
 } from "lucide-react";
 import { Link } from "react-router-dom";

@@ -1,15 +1,36 @@
-import { Link, useLocation } from "react-router-dom";
-import { User, Mail, Lock, UserPlus, LogIn, Building2 } from "lucide-react";
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { User, Mail, Lock, UserPlus, Building2 } from "lucide-react";
+import type { UserRole } from "@/features/auth/types/auth.types";
+import { useAuth } from "@/features/auth/context/AuthContext";
 
 export const RegisterPage = () => {
+  const { login } = useAuth(); // For demo auto-login after register
+  const navigate = useNavigate();
   const location = useLocation();
   const isLogin = location.pathname.includes("/auth/login");
+
+  const [selectedRole, setSelectedRole] = useState<UserRole>("user");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simulate registration then login
+    login(email, password, selectedRole);
+    if (selectedRole === "admin") navigate("/admin");
+    else if (selectedRole === "landlord") navigate("/landlord");
+    else navigate("/home");
+  };
+
+  const roleTabIndex = selectedRole === "user" ? 0 : selectedRole === "landlord" ? 1 : 2;
 
   return (
     <div className="flex flex-col w-full">
 
       {/* ── Logo ── */}
-      <Link to="/" className="flex items-center gap-2.5 mb-8 no-underline group">
+      <Link to="/" className="flex items-center gap-2.5 mb-4 no-underline group">
         <div className="w-9 h-9 rounded-xl bg-zinc-900 dark:bg-white flex items-center justify-center shadow-md dark:shadow-[0_0_20px_rgba(255,255,255,0.25)] group-hover:scale-105 transition-all">
           <Building2 size={18} className="text-white dark:text-zinc-950" />
         </div>
@@ -19,29 +40,49 @@ export const RegisterPage = () => {
       </Link>
 
       {/* ── Tabs: Đăng nhập / Đăng ký ── */}
-      <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-800/80 p-1.5 rounded-2xl mb-7 border border-zinc-200/50 dark:border-zinc-700/50">
+      <div className="relative flex bg-zinc-100 dark:bg-zinc-800/80 p-1.5 rounded-2xl mb-6 border border-zinc-200/50 dark:border-zinc-700/50">
+        <div
+          className="absolute top-1.5 bottom-1.5 w-[calc(50%-12px)] bg-white dark:bg-zinc-700/90 rounded-xl shadow-sm border border-zinc-200/60 dark:border-zinc-600/60 transition-transform duration-300 ease-in-out"
+          style={{ transform: `translateX(${isLogin ? "0" : "calc(100% + 12px)"})` }}
+        />
         <Link
           to="/auth/login"
-          className={`flex flex-1 items-center justify-center gap-1.5 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200 no-underline ${
-            isLogin
-              ? "bg-white dark:bg-zinc-700/90 text-zinc-900 dark:text-white shadow-sm dark:shadow-md border border-zinc-200/60 dark:border-zinc-600/60"
-              : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100"
+          className={`relative z-10 flex flex-1 items-center justify-center gap-1.5 py-2.5 text-[13px] font-semibold transition-all duration-200 no-underline ${
+            isLogin ? "text-zinc-900 dark:text-white" : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400"
           }`}
         >
-          <LogIn size={13} />
           Đăng nhập
         </Link>
         <Link
           to="/auth/register"
-          className={`flex flex-1 items-center justify-center gap-1.5 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200 no-underline ${
-            !isLogin
-              ? "bg-white dark:bg-zinc-700/90 text-zinc-900 dark:text-white shadow-sm dark:shadow-md border border-zinc-200/60 dark:border-zinc-600/60"
-              : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100"
+          className={`relative z-10 flex flex-1 items-center justify-center gap-1.5 py-2.5 text-[13px] font-semibold transition-all duration-200 no-underline ${
+            !isLogin ? "text-zinc-900 dark:text-white" : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400"
           }`}
         >
-          <UserPlus size={13} />
           Đăng ký
         </Link>
+      </div>
+
+      {/* ── Role Selector ── */}
+      <div className="mb-6">
+        <div className="relative flex bg-zinc-100 dark:bg-zinc-800/80 p-1 rounded-xl border border-zinc-200/50 dark:border-zinc-700/50">
+          <div
+            className="absolute top-1 bottom-1 w-[calc(33.333%-4px)] bg-white dark:bg-zinc-700/90 rounded-lg shadow-sm border border-zinc-200/60 dark:border-zinc-600/60 transition-transform duration-300 ease-in-out"
+            style={{ transform: `translateX(${roleTabIndex * 100}%)`, left: `${roleTabIndex * 4}px` }}
+          />
+          {(["user", "landlord", "admin"] as UserRole[]).map((r) => (
+            <button
+              key={r}
+              type="button"
+              onClick={() => setSelectedRole(r)}
+              className={`relative z-10 flex-1 py-2 text-[12px] font-semibold transition-all duration-200 cursor-pointer ${
+                selectedRole === r ? "text-zinc-900 dark:text-white" : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400"
+              }`}
+            >
+              {r === "user" ? "Người Dùng" : r === "landlord" ? "Chủ Trọ" : "Quản Trị"}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ── Heading ── */}
@@ -55,7 +96,7 @@ export const RegisterPage = () => {
       </div>
 
       {/* ── Form ── */}
-      <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-4 mb-5">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 mb-5">
         {/* Full Name */}
         <div className="flex flex-col gap-1.5">
           <label className="text-[12.5px] font-semibold text-zinc-700 dark:text-zinc-300">
@@ -67,8 +108,10 @@ export const RegisterPage = () => {
             </div>
             <input
               type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Nguyễn Văn A"
-              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-[#F6F5F2] dark:bg-zinc-900/90 text-[13.5px] text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition-all focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-800 dark:focus:border-zinc-400 focus:ring-4 focus:ring-zinc-900/5 dark:focus:ring-white/5"
+              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-[#F6F5F2] dark:bg-zinc-900/90 text-[13.5px] text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition-all focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-4 focus:ring-zinc-900/5 dark:focus:ring-white/5"
             />
           </div>
         </div>
@@ -84,8 +127,10 @@ export const RegisterPage = () => {
             </div>
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="name@smartestate.vn"
-              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-[#F6F5F2] dark:bg-zinc-900/90 text-[13.5px] text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition-all focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-800 dark:focus:border-zinc-400 focus:ring-4 focus:ring-zinc-900/5 dark:focus:ring-white/5"
+              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-[#F6F5F2] dark:bg-zinc-900/90 text-[13.5px] text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition-all focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-4 focus:ring-zinc-900/5 dark:focus:ring-white/5"
             />
           </div>
         </div>
@@ -101,8 +146,10 @@ export const RegisterPage = () => {
             </div>
             <input
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Tối thiểu 8 ký tự"
-              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-[#F6F5F2] dark:bg-zinc-900/90 text-[13.5px] text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition-all focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-800 dark:focus:border-zinc-400 focus:ring-4 focus:ring-zinc-900/5 dark:focus:ring-white/5"
+              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-[#F6F5F2] dark:bg-zinc-900/90 text-[13.5px] text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition-all focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-4 focus:ring-zinc-900/5 dark:focus:ring-white/5"
             />
           </div>
         </div>

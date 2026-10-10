@@ -6,7 +6,6 @@ import {
   ShoppingBag,
   KeyRound,
   GraduationCap,
-  PlusCircle,
   Kanban,
   FileText,
   Heart,
@@ -77,13 +76,12 @@ export const AppSidebar = ({ onToggleCollapse }: AppSidebarProps) => {
     { label: "Thuê BĐS", href: "/properties?type=rent", icon: KeyRound },
     { label: "Trọ Sinh Viên", href: "/properties?category=student_room&type=rent", icon: GraduationCap },
     { label: "So sánh BĐS", href: "/properties/compare", icon: GitCompare },
-    { label: "Đăng tin BĐS", href: "/post-listing", icon: PlusCircle },
     { label: "Môi giới & Deal", href: "/dashboard/pipeline", icon: Kanban },
     { label: "Bài viết & Tin tức", href: "/blog", icon: FileText },
   ];
 
   const USER_ITEMS = [
-    { label: "Quản lý tin đăng", href: "/dashboard/my-listings", icon: LayoutList },
+    { label: "Quản lý BĐS", href: "/my-properties", icon: LayoutList },
     { label: "BĐS đã lưu", href: "/favorites", icon: Heart, badge: "3" },
     { label: "Chat & Tư vấn", href: "/dashboard/chat", icon: MessageCircle },
     { label: "Thanh toán", href: "/dashboard/payment", icon: CreditCard },
