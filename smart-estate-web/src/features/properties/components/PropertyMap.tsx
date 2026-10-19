@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Polygon, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Star, MapPin, Bed, Bath, Maximize2, ExternalLink, Heart, X } from "lucide-react";
 import type { Property } from "@/features/properties/data/mockProperties";
 import { VIETNAM_CITIES } from "@/features/properties/data/vietnamLocations";
@@ -327,7 +327,7 @@ export const PropertyMap = ({
                     {/* Title + Location */}
                     <div>
                       <Link
-                        to={`/properties/${prop.id}`}
+                        href={`/properties/${prop.id}`}
                         className="text-[11.5px] font-bold text-zinc-900 dark:text-white line-clamp-1 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors block !text-zinc-900 dark:!text-white leading-tight"
                       >
                         {prop.title}
@@ -352,7 +352,7 @@ export const PropertyMap = ({
 
                     {/* Action Button */}
                     <Link
-                      to={`/properties/${prop.id}`}
+                      href={`/properties/${prop.id}`}
                       className="mt-0.5 w-full flex items-center justify-center gap-1 py-1 rounded-lg bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 text-[10.5px] font-extrabold hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-all shadow-xs active:scale-[0.99] !text-white dark:!text-zinc-950"
                     >
                       <span>Xem chi tiết</span>

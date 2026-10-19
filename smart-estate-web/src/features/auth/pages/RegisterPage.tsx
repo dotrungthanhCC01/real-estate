@@ -1,14 +1,17 @@
+"use client";
+
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { User, Mail, Lock, UserPlus, Building2 } from "lucide-react";
 import type { UserRole } from "@/features/auth/types/auth.types";
 import { useAuth } from "@/features/auth/context/AuthContext";
 
 export const RegisterPage = () => {
   const { login } = useAuth(); // For demo auto-login after register
-  const navigate = useNavigate();
-  const location = useLocation();
-  const isLogin = location.pathname.includes("/auth/login");
+  const router = useRouter();
+  const pathname = usePathname();
+  const isLogin = pathname.includes("/auth/login");
 
   const [selectedRole, setSelectedRole] = useState<UserRole>("user");
   const [name, setName] = useState("");
@@ -19,9 +22,9 @@ export const RegisterPage = () => {
     e.preventDefault();
     // Simulate registration then login
     login(email, password, selectedRole);
-    if (selectedRole === "admin") navigate("/admin");
-    else if (selectedRole === "landlord") navigate("/landlord");
-    else navigate("/home");
+    if (selectedRole === "admin") router.push("/admin");
+    else if (selectedRole === "landlord") router.push("/landlord");
+    else router.push("/home");
   };
 
   const roleTabIndex = selectedRole === "user" ? 0 : selectedRole === "landlord" ? 1 : 2;
@@ -30,7 +33,7 @@ export const RegisterPage = () => {
     <div className="flex flex-col w-full">
 
       {/* ── Logo ── */}
-      <Link to="/" className="flex items-center gap-2.5 mb-4 no-underline group">
+      <Link href="/" className="flex items-center gap-2.5 mb-4 no-underline group">
         <div className="w-9 h-9 rounded-xl bg-zinc-900 dark:bg-white flex items-center justify-center shadow-md dark:shadow-[0_0_20px_rgba(255,255,255,0.25)] group-hover:scale-105 transition-all">
           <Building2 size={18} className="text-white dark:text-zinc-950" />
         </div>
@@ -46,7 +49,7 @@ export const RegisterPage = () => {
           style={{ transform: `translateX(${isLogin ? "0" : "calc(100% + 12px)"})` }}
         />
         <Link
-          to="/auth/login"
+          href="/auth/login"
           className={`relative z-10 flex flex-1 items-center justify-center gap-1.5 py-2.5 text-[13px] font-semibold transition-all duration-200 no-underline ${
             isLogin ? "text-zinc-900 dark:text-white" : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400"
           }`}
@@ -54,7 +57,7 @@ export const RegisterPage = () => {
           Đăng nhập
         </Link>
         <Link
-          to="/auth/register"
+          href="/auth/register"
           className={`relative z-10 flex flex-1 items-center justify-center gap-1.5 py-2.5 text-[13px] font-semibold transition-all duration-200 no-underline ${
             !isLogin ? "text-zinc-900 dark:text-white" : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400"
           }`}
@@ -168,7 +171,7 @@ export const RegisterPage = () => {
       <p className="text-center text-[12.5px] text-zinc-500 dark:text-zinc-400 mt-2">
         Đã có tài khoản?{" "}
         <Link
-          to="/auth/login"
+          href="/auth/login"
           className="font-bold text-zinc-900 dark:text-white hover:underline no-underline transition-colors underline-offset-2 ml-1"
         >
           Đăng nhập ngay

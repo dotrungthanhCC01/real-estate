@@ -1,5 +1,7 @@
+"use client";
+
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import {
   ArrowUpRight,
   MapPin,
@@ -192,7 +194,7 @@ export const HomePage = () => {
                   />
                 </div>
                 <Link
-                  to="/properties"
+                  href="/properties"
                   className="flex items-center gap-1.5 px-6 py-3 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-xs font-bold uppercase tracking-wider hover:opacity-90 transition shadow-md"
                 >
                   <span>Tìm kiếm</span>
@@ -289,7 +291,7 @@ export const HomePage = () => {
 
                   <div className="absolute top-6 right-6 z-20">
                     <Link
-                      to="/properties/1"
+                      href="/properties/1"
                       className="w-12 h-12 rounded-full bg-white text-zinc-900 flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
                     >
                       <ArrowUpRight className="w-5 h-5 stroke-[2.5]" />
@@ -346,7 +348,7 @@ export const HomePage = () => {
 
             <div className="flex justify-between items-center text-xs text-zinc-500 font-medium pt-2">
               <p>💡 Rê chuột vào từng bất động sản để xem chi tiết tài chính & thông số</p>
-              <Link to="/properties" className="font-bold text-zinc-900 dark:text-white hover:underline flex items-center gap-1">
+              <Link href="/properties" className="font-bold text-zinc-900 dark:text-white hover:underline flex items-center gap-1">
                 Xem tất cả BĐS <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -419,7 +421,7 @@ export const HomePage = () => {
 
               <div className="absolute top-6 right-6 z-20">
                 <Link
-                  to="/auth/register"
+                  href="/auth/register"
                   className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/90 dark:bg-zinc-900/90 text-zinc-900 dark:text-white text-xs font-bold uppercase tracking-wider backdrop-blur-md shadow-lg hover:scale-105 transition-transform"
                 >
                   <Phone className="w-3.5 h-3.5" />

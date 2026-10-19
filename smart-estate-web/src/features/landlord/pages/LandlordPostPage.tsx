@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { FilePlus, MapPin, DollarSign, Home, Image, CheckCircle } from "lucide-react";
 

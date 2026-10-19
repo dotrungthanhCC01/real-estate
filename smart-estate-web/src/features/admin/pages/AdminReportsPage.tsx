@@ -1,3 +1,5 @@
+"use client";
+
 import { BarChart3, TrendingUp, Users, Building2, DollarSign } from "lucide-react";
 
 const MONTHLY = [

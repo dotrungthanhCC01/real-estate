@@ -25,7 +25,8 @@ src/
 ├── hooks/                   # Custom Hooks toàn cục (useDebounce, useLocalStorage...)
 ├── layouts/                 # Thư mục chứa Layout màn hình (MainLayout, AuthLayout...)
 ├── lib/                     # Khởi tạo thư viện bên thứ 3 (axios, react-query, socket...)
-├── routes/                  # Định tuyến ứng dụng (App Router, Private Routes)
+├── app/                     # Next.js App Router: layout.tsx/page.tsx theo cấu trúc URL
+├── views/                   # Màn hình dùng chung (Landing, AppHome, 404)
 ├── store/                   # State toàn cục (Jotai Atoms: authAtom, themeAtom...)
 └── types/                   # Định nghĩa Type / Interface dùng chung toàn hệ thống
 ```
@@ -77,9 +78,9 @@ Dùng **Jotai** để quản lý state nhẹ nhàng, linh hoạt:
 
 ---
 
-### 5. `layouts/` & `routes/`
+### 5. `layouts/` & `app/`
 - **`layouts/`**: Chứa các khung layout chính như `MainLayout` (gồm Header + Content + Footer), `AuthLayout` (khung đăng nhập), `DashboardLayout` (kèm Sidebar điều hướng).
-- **`routes/`**: File `app-router.tsx` chứa danh sách toàn bộ URL của trang web kết hợp với `react-router-dom`.
+- **`app/`**: Định tuyến theo file của Next.js App Router. Mỗi thư mục là một URL, `page.tsx` render trang từ `features/`, `layout.tsx` bọc layout và `ProtectedRoute`.
 
 ---
 

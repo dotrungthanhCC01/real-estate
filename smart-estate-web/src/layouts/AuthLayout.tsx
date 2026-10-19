@@ -1,4 +1,7 @@
-import { Outlet, Link } from "react-router-dom";
+"use client";
+
+import type { ReactNode } from "react";
+import Link from "next/link";
 import { Building2, ChevronLeft, ChevronRight, Quote, Moon, Sun } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTheme } from "../store/theme.context";
@@ -32,7 +35,7 @@ const founders = [
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
-export const AuthLayout = () => {
+export const AuthLayout = ({ children }: { children: ReactNode }) => {
   const [current, setCurrent] = useState(0);
   const founder = founders[current];
   const { theme, toggleTheme } = useTheme();
@@ -64,7 +67,7 @@ export const AuthLayout = () => {
         </button>
 
         <div className="w-full max-w-[360px]">
-          <Outlet />
+          {children}
         </div>
       </div>
 
@@ -133,7 +136,7 @@ export const AuthLayout = () => {
 
           {/* Logo — top left */}
           <Link
-            to="/"
+            href="/"
             className="absolute top-6 left-7 z-20 flex items-center gap-2.5 no-underline text-white group"
           >
             <div className="w-9 h-9 rounded-[10px] bg-white/[0.18] dark:bg-black/40 border border-white/30 dark:border-white/20 backdrop-blur-md flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-lg">

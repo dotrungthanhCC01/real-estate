@@ -1,5 +1,8 @@
+"use client";
+
 import { useState, useMemo, useEffect, useRef } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Search,
   MapPin,
@@ -48,7 +51,7 @@ const PropertyGridCard = ({
 
   return (
     <Link
-      to={`/properties/${property.id}`}
+      href={`/properties/${property.id}`}
       onMouseEnter={() => onHover?.(property.id)}
       onMouseLeave={() => onHover?.(null)}
       className={`group flex flex-col bg-white dark:bg-[#151518] rounded-2xl overflow-hidden border transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
@@ -186,7 +189,7 @@ const PropertyListCard = ({
 
   return (
     <Link
-      to={`/properties/${property.id}`}
+      href={`/properties/${property.id}`}
       onMouseEnter={() => onHover?.(property.id)}
       onMouseLeave={() => onHover?.(null)}
       className={`group flex flex-col sm:flex-row bg-white dark:bg-[#151518] rounded-2xl overflow-hidden border transition-all duration-300 hover:shadow-xl ${
@@ -288,7 +291,13 @@ const PropertyListCard = ({
 
 // ─── Main PropertyListPage ──────────────────────────────────────────────────────
 export const PropertyListPage = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const setSearchParams = (params: URLSearchParams) => {
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
+  };
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("newest");

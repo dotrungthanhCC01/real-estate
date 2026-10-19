@@ -1,5 +1,8 @@
+"use client";
+
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Search,
   MapPin,
@@ -30,7 +33,7 @@ const LuxuryPropertyCard = ({ property }: { property: Property }) => {
 
   return (
     <Link
-      to={`/properties/${property.id}`}
+      href={`/properties/${property.id}`}
       className="group flex flex-col bg-white dark:bg-[#151518] rounded-2xl overflow-hidden border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
     >
       {/* Image Banner */}
@@ -127,7 +130,7 @@ const LuxuryPropertyCard = ({ property }: { property: Property }) => {
 
 // ─── Main AppHomePage Component ───────────────────────────────────────────────
 export const AppHomePage = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   // Search Bar state
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -146,7 +149,7 @@ export const AppHomePage = () => {
     if (searchType) params.set("category", searchType);
     if (searchCity) params.set("city", searchCity);
     if (searchPrice) params.set("price", searchPrice);
-    navigate(`/properties?${params.toString()}`);
+    router.push(`/properties?${params.toString()}`);
   };
 
   // Options for CustomSelect
@@ -223,19 +226,19 @@ export const AppHomePage = () => {
             {/* Segment Shortcut Pills */}
             <div className="flex flex-wrap gap-2.5">
               <button
-                onClick={() => navigate("/properties?type=buy")}
+                onClick={() => router.push("/properties?type=buy")}
                 className="px-5 py-2 rounded-full bg-white text-zinc-950 font-bold text-[13px] hover:bg-zinc-100 transition-all shadow-md"
               >
                 Mua nhà ở
               </button>
               <button
-                onClick={() => navigate("/properties?type=rent")}
+                onClick={() => router.push("/properties?type=rent")}
                 className="px-5 py-2 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-md font-bold text-[13px] transition-all border border-white/20"
               >
                 Thuê căn hộ
               </button>
               <button
-                onClick={() => navigate("/properties?category=student_room&type=rent")}
+                onClick={() => router.push("/properties?category=student_room&type=rent")}
                 className="px-5 py-2 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-md font-bold text-[13px] transition-all border border-white/20"
               >
                 Trọ Sinh Viên
@@ -389,7 +392,7 @@ export const AppHomePage = () => {
             {isExpanded ? "Thu gọn danh sách" : `Xem thêm (${filteredFeatured.length - displayProperties.length} BĐS nữa)`}
           </Button>
 
-          <Link to="/properties">
+          <Link href="/properties">
             <Button
               size="lg"
               className="rounded-full px-8 font-extrabold bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-[13.5px] shadow-sm"
@@ -416,7 +419,7 @@ export const AppHomePage = () => {
               </h2>
             </div>
 
-            <Link to="/properties?category=student_room&type=rent">
+            <Link href="/properties?category=student_room&type=rent">
               <Button variant="outline" className="rounded-full text-[12.5px] font-bold">
                 Xem tất cả ({studentProperties.length})
                 <ArrowRight className="w-3.5 h-3.5 ml-1" />
@@ -447,7 +450,7 @@ export const AppHomePage = () => {
               </h2>
             </div>
 
-            <Link to="/properties?type=buy">
+            <Link href="/properties?type=buy">
               <Button variant="outline" className="rounded-full text-[12.5px] font-bold">
                 Xem thêm
                 <ArrowRight className="w-3.5 h-3.5 ml-1" />
@@ -470,7 +473,7 @@ export const AppHomePage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Card Mua */}
           <Link
-            to="/properties?type=buy"
+            href="/properties?type=buy"
             className="group relative h-[340px] rounded-3xl overflow-hidden cursor-pointer shadow-lg"
           >
             <img
@@ -501,7 +504,7 @@ export const AppHomePage = () => {
 
           {/* Card Thuê */}
           <Link
-            to="/properties?type=rent"
+            href="/properties?type=rent"
             className="group relative h-[340px] rounded-3xl overflow-hidden cursor-pointer shadow-lg"
           >
             <img
@@ -550,7 +553,7 @@ export const AppHomePage = () => {
           </div>
 
           <div className="relative z-10 shrink-0">
-            <Link to="/post-listing">
+            <Link href="/post-listing">
               <Button
                 size="lg"
                 className="rounded-full bg-white text-zinc-950 hover:bg-zinc-200 font-extrabold px-8 py-6 text-[14.5px] shadow-xl hover:scale-105 transition-transform"
@@ -582,9 +585,9 @@ export const AppHomePage = () => {
           </p>
 
           <div className="flex items-center gap-6 text-[13px] font-semibold text-zinc-500 dark:text-zinc-400">
-            <Link to="/properties?type=buy" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Mua BĐS</Link>
-            <Link to="/properties?type=rent" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Thuê BĐS</Link>
-            <Link to="/post-listing" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Đăng tin</Link>
+            <Link href="/properties?type=buy" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Mua BĐS</Link>
+            <Link href="/properties?type=rent" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Thuê BĐS</Link>
+            <Link href="/post-listing" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Đăng tin</Link>
           </div>
         </div>
       </footer>

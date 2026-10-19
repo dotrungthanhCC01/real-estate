@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
 import { ArrowLeft, FileQuestion } from "lucide-react";
 
 export const NotFoundPage = () => {
@@ -14,7 +16,7 @@ export const NotFoundPage = () => {
         Đường dẫn bạn yêu cầu không tồn tại hoặc đã được di chuyển.
       </p>
       <Link
-        to="/"
+        href="/"
         className="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl transition shadow-md"
       >
         <ArrowLeft className="w-4 h-4" />

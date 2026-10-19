@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink } from "@/components/common/NavLink";
 import {
   LayoutDashboard,
   Building,
@@ -38,7 +38,7 @@ export const Sidebar = () => {
             return (
               <NavLink
                 key={item.path}
-                to={item.path}
+                href={item.path}
                 end={item.end}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${
@@ -59,7 +59,7 @@ export const Sidebar = () => {
       {/* Footer back link */}
       <div className="border-t pt-4 space-y-2">
         <NavLink
-          to="/"
+          href="/"
           className="flex items-center gap-2 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition"
         >
           <ArrowLeft className="w-4 h-4" />

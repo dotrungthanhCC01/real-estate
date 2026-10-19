@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import {
   Plus,
@@ -14,7 +16,7 @@ import {
   Users,
   Heart,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { MOCK_PROPERTIES } from "@/features/properties/data/mockProperties";
 
 type TabType = "active" | "pending" | "expired";
@@ -130,7 +132,7 @@ export const MyListingsPage = () => {
           </p>
         </div>
         <Link
-          to="/post-listing"
+          href="/post-listing"
           className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 text-[13px] font-extrabold hover:opacity-90 transition-opacity shadow-md"
         >
           <Plus className="w-4 h-4" />
@@ -225,7 +227,7 @@ export const MyListingsPage = () => {
               : "Không có tin nào đã hết hạn."}
           </p>
           <Link
-            to="/post-listing"
+            href="/post-listing"
             className="mt-4 px-5 py-2.5 rounded-2xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 text-[13px] font-bold hover:opacity-90 transition-opacity"
           >
             Đăng tin mới
@@ -298,7 +300,7 @@ export const MyListingsPage = () => {
                 {/* Action Buttons */}
                 <div className="flex items-center gap-2 pt-1 border-t border-zinc-100 dark:border-zinc-800/80">
                   <Link
-                    to={`/properties/${listing.id}`}
+                    href={`/properties/${listing.id}`}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[12px] font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                   >
                     <Eye className="w-3.5 h-3.5" />
@@ -321,7 +323,7 @@ export const MyListingsPage = () => {
                     <Trash2 className="w-3.5 h-3.5" />
                     Xóa
                   </button>
-                  <Link to={`/properties/${listing.id}`} className="flex items-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors">
+                  <Link href={`/properties/${listing.id}`} className="flex items-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors">
                     <ChevronRight className="w-4 h-4" />
                   </Link>
                   <button className="flex items-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors">

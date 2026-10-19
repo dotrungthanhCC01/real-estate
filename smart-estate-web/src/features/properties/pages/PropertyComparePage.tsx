@@ -1,5 +1,8 @@
+"use client";
+
 import { useMemo } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   Bed,
@@ -134,7 +137,7 @@ const COMPARE_ROWS: {
 ];
 
 export const PropertyComparePage = () => {
-  const [searchParams] = useSearchParams();
+  const searchParams = useSearchParams();
   const ids = (searchParams.get("ids") || "").split(",").filter(Boolean);
 
   const properties = useMemo(
@@ -162,7 +165,7 @@ export const PropertyComparePage = () => {
           </p>
         </div>
         <Link
-          to="/properties"
+          href="/properties"
           className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 font-bold text-[13.5px] hover:opacity-90 transition-opacity shadow-md"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -184,7 +187,7 @@ export const PropertyComparePage = () => {
       {/* ── Header ── */}
       <div className="flex items-center gap-4">
         <Link
-          to="/properties"
+          href="/properties"
           className="w-10 h-10 rounded-2xl bg-white dark:bg-[#151518] border border-zinc-200/80 dark:border-zinc-800/80 flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors shadow-xs"
         >
           <ArrowLeft className="w-4.5 h-4.5 text-zinc-700 dark:text-zinc-300" />
@@ -258,7 +261,7 @@ export const PropertyComparePage = () => {
               </div>
 
               <Link
-                to={`/properties/${prop.id}`}
+                href={`/properties/${prop.id}`}
                 className="mt-1 w-full py-2.5 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 text-[12.5px] font-bold text-center hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5"
               >
                 <Home className="w-3.5 h-3.5" />

@@ -1,5 +1,7 @@
+"use client";
+
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Clock, ChevronRight, Search } from "lucide-react";
 import { MOCK_ARTICLES, ARTICLE_CATEGORIES, type ArticleCategory } from "@/features/blog/data/mockBlogData";
 import { cn } from "@/lib/utils";
@@ -39,7 +41,7 @@ export const ArticleListPage = () => {
 
       {/* ── Hero: Latest featured article ── */}
       {hero && (
-        <Link to={`/blog/articles/${hero.slug}`} className="group grid md:grid-cols-2 gap-0 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors">
+        <Link href={`/blog/articles/${hero.slug}`} className="group grid md:grid-cols-2 gap-0 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors">
           <div className="aspect-video md:aspect-auto min-h-[220px]">
             <img src={hero.coverImage} alt={hero.title} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500" />
           </div>
@@ -84,7 +86,7 @@ export const ArticleListPage = () => {
           {rest.map(article => (
             <Link
               key={article.id}
-              to={`/blog/articles/${article.slug}`}
+              href={`/blog/articles/${article.slug}`}
               className="group flex flex-col"
             >
               {/* Cover */}

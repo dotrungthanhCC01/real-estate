@@ -1,5 +1,7 @@
+"use client";
+
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import {
   MapPin, Phone, Plus, Search, Home, ShoppingBag, KeyRound, Users,
 } from "lucide-react";
@@ -265,7 +267,7 @@ export const ListingPostsPage = () => {
             Đăng nhập để đăng tin tìm/bán/cho thuê BĐS
           </p>
           <Link
-            to="/auth/login"
+            href="/auth/login"
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl text-[13px] font-bold hover:opacity-90 transition-opacity"
           >
             Đăng nhập

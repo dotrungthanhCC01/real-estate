@@ -1,5 +1,5 @@
 import { X, ArrowRight, GitCompare } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import type { Property } from "@/features/properties/data/mockProperties";
 
 interface CompareBarProps {
@@ -87,7 +87,7 @@ export const CompareBar = ({
           </button>
           {selectedProperties.length >= 2 && (
             <Link
-              to={`/properties/compare?ids=${selectedProperties.map((p) => p.id).join(",")}`}
+              href={`/properties/compare?ids=${selectedProperties.map((p) => p.id).join(",")}`}
               className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 text-[11.5px] font-extrabold hover:opacity-90 transition-all whitespace-nowrap shadow-sm shrink-0"
             >
               <span>So sánh ngay</span>

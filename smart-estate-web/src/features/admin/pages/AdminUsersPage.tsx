@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { Users, Search, Filter, MoreVertical, CheckCircle, XCircle, Shield } from "lucide-react";
 

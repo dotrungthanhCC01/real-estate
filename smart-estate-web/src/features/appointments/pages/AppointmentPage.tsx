@@ -1,3 +1,5 @@
+"use client";
+
 import { CalendarDays, Plus } from "lucide-react";
 
 export const AppointmentPage = () => {
