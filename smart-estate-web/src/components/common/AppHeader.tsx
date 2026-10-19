@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   Building2,
   Sun,
@@ -27,7 +28,8 @@ const NAV_ITEMS = [
 
 export const AppHeader = () => {
   const { theme, toggleTheme } = useTheme();
-  const location = useLocation();
+  const pathname = usePathname();
+  const currentSearch = useSearchParams().toString();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const bellRef = useRef<HTMLButtonElement>(null);
@@ -36,9 +38,9 @@ export const AppHeader = () => {
     if (href.startsWith("#")) return false;
     const [path, search] = href.split("?");
     if (search) {
-      return location.pathname === path && location.search.includes(search);
+      return pathname === path && currentSearch.includes(search);
     }
-    return location.pathname === path && !location.search;
+    return pathname === path && !currentSearch;
   };
 
   return (
@@ -47,7 +49,7 @@ export const AppHeader = () => {
         <div className="max-w-[1440px] mx-auto h-[64px] px-5 sm:px-8 bg-white/75 dark:bg-[#0c0c0e]/75 backdrop-blur-2xl border border-white/40 dark:border-zinc-800/80 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] flex items-center justify-between pointer-events-auto transition-all">
 
           {/* ── Brand Logo ── */}
-          <Link to="/home" className="flex items-center gap-2.5 shrink-0 group">
+          <Link href="/home" className="flex items-center gap-2.5 shrink-0 group">
             <div className="w-9 h-9 rounded-xl bg-zinc-900 dark:bg-white flex items-center justify-center shadow-md group-hover:scale-105 transition-all">
               <Building2 className="w-5 h-5 text-white dark:text-zinc-900" />
             </div>
@@ -61,7 +63,7 @@ export const AppHeader = () => {
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.label}
-                to={item.href}
+                href={item.href}
                 className={cn(
                   "px-3.5 py-1.5 rounded-full text-[13px] font-semibold transition-all duration-200",
                   isActive(item.href)
@@ -79,7 +81,7 @@ export const AppHeader = () => {
 
             {/* Favourite Button */}
             <Link
-              to="/favorites"
+              href="/favorites"
               className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12.5px] font-semibold text-zinc-600 dark:text-zinc-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
               title="Yêu thích"
             >
@@ -92,7 +94,7 @@ export const AppHeader = () => {
 
             {/* Chat Link */}
             <Link
-              to="/dashboard/chat"
+              href="/dashboard/chat"
               className="relative w-8 h-8 rounded-full flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
               title="Tin nhắn"
             >
@@ -130,7 +132,7 @@ export const AppHeader = () => {
             </button>
 
             {/* Đăng tin CTA */}
-            <Link to="/post-listing" className="hidden sm:block">
+            <Link href="/post-listing" className="hidden sm:block">
               <Button
                 variant="outline"
                 size="sm"
@@ -142,7 +144,7 @@ export const AppHeader = () => {
             </Link>
 
             {/* Login / Register */}
-            <Link to="/auth/login">
+            <Link href="/auth/login">
               <Button
                 variant="default"
                 size="sm"
@@ -168,7 +170,7 @@ export const AppHeader = () => {
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.label}
-                to={item.href}
+                href={item.href}
                 onClick={() => setMobileOpen(false)}
                 className={cn(
                   "block py-2.5 px-3 rounded-xl text-[13.5px] font-semibold transition-all",
@@ -182,7 +184,7 @@ export const AppHeader = () => {
             ))}
             <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800">
               <Link
-                to="/post-listing"
+                href="/post-listing"
                 onClick={() => setMobileOpen(false)}
                 className="flex items-center justify-center gap-1.5 py-2.5 rounded-full border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white text-[13px] font-bold"
               >

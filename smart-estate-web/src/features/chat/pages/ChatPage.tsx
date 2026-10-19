@@ -1,3 +1,5 @@
+"use client";
+
 import { MessageSquare, Send } from "lucide-react";
 
 export const ChatPage = () => {

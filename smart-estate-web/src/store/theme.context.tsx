@@ -1,3 +1,5 @@
+"use client";
+
 import {
   createContext,
   useContext,
@@ -51,7 +53,6 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 };
 
 // This module intentionally exports both the provider component and its hook.
-// eslint-disable-next-line react-refresh/only-export-components
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) {

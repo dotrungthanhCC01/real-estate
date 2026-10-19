@@ -1,11 +1,13 @@
-import { Link } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
 import { ArrowRight, Clock, ChevronRight } from "lucide-react";
 import { MOCK_ARTICLES } from "@/features/blog/data/mockBlogData";
 import { cn } from "@/lib/utils";
 
 // ── Featured card (large) ─────────────────────────────────────────────────────
 const FeaturedArticleCard = ({ article }: { article: typeof MOCK_ARTICLES[0] }) => (
-  <Link to={`/blog/articles/${article.slug}`} className="group relative rounded-2xl overflow-hidden block aspect-[4/3]">
+  <Link href={`/blog/articles/${article.slug}`} className="group relative rounded-2xl overflow-hidden block aspect-[4/3]">
     <img
       src={article.coverImage}
       alt={article.title}
@@ -52,7 +54,7 @@ export const BlogPage = () => {
             </h1>
           </div>
           <Link
-            to="/blog/articles"
+            href="/blog/articles"
             className="hidden md:flex items-center gap-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-5 py-2.5 rounded-full text-[13px] font-bold hover:opacity-90 transition-opacity whitespace-nowrap"
           >
             Xem tất cả bài viết <ArrowRight size={14} />
@@ -109,7 +111,7 @@ export const BlogPage = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Bài viết gần đây</h2>
           <Link
-            to="/blog/articles"
+            href="/blog/articles"
             className="text-[13px] font-semibold text-zinc-500 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1 transition-colors"
           >
             Xem tất cả <ChevronRight size={14} />
@@ -119,7 +121,7 @@ export const BlogPage = () => {
           {recent.map((article, i) => (
             <Link
               key={article.id}
-              to={`/blog/articles/${article.slug}`}
+              href={`/blog/articles/${article.slug}`}
               className={cn(
                 "group flex gap-5 items-start py-4",
                 i < recent.length - 1 && "border-b border-zinc-100 dark:border-zinc-800"
@@ -161,7 +163,7 @@ export const BlogPage = () => {
             Mua bán, cho thuê hay tìm nhà — cộng đồng SmartEstate sẵn sàng kết nối bạn với hàng ngàn người dùng thực.
           </p>
           <Link
-            to="/blog/listings"
+            href="/blog/listings"
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-zinc-900 rounded-full text-[13px] font-bold hover:bg-zinc-100 transition-colors"
           >
             Xem & Đăng tin <ArrowRight size={14} />

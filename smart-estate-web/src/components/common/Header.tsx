@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { Building2, ArrowUpRight, Menu, X, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/store/theme.context";
 
@@ -10,8 +11,8 @@ interface HeaderProps {
 export const Header = ({ activeSection = "hero" }: HeaderProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const pathname = usePathname();
+  const router = useRouter();
 
   const navItems = [
     { id: "hero", label: "TỔNG QUAN", href: "#hero" },
@@ -25,8 +26,8 @@ export const Header = ({ activeSection = "hero" }: HeaderProps) => {
     e.preventDefault();
     setMobileOpen(false);
 
-    if (location.pathname !== "/") {
-      navigate("/");
+    if (pathname !== "/") {
+      router.push("/");
       setTimeout(() => {
         const el = document.querySelector(href);
         el?.scrollIntoView({ behavior: "smooth" });
@@ -42,7 +43,7 @@ export const Header = ({ activeSection = "hero" }: HeaderProps) => {
       <div className="max-w-[1400px] mx-auto h-[62px] px-6 rounded-full border border-black/10 dark:border-white/10 bg-white/80 dark:bg-zinc-900/85 backdrop-blur-xl shadow-lg shadow-black/5 flex items-center justify-between pointer-events-auto transition-all duration-300">
         
         {/* Brand Logo */}
-        <Link to="/" className="flex items-center gap-2.5 group">
+        <Link href="/" className="flex items-center gap-2.5 group">
           <div className="w-8 h-8 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 flex items-center justify-center font-bold shadow-sm transition-transform group-hover:scale-105">
             <Building2 className="w-4 h-4" />
           </div>
@@ -85,13 +86,13 @@ export const Header = ({ activeSection = "hero" }: HeaderProps) => {
           </button>
 
           <Link
-            to="/auth/login"
+            href="/auth/login"
             className="hidden sm:block text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white px-3 py-2 transition-colors"
           >
             Đăng nhập
           </Link>
           <Link
-            to="/auth/register"
+            href="/auth/register"
             className="hidden sm:flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 px-5 py-2.5 rounded-full hover:bg-zinc-800 dark:hover:bg-zinc-100 shadow-sm transition-all hover:scale-105"
           >
             <span>Bắt đầu ngay</span>
@@ -135,14 +136,14 @@ export const Header = ({ activeSection = "hero" }: HeaderProps) => {
           ))}
           <div className="pt-3 border-t border-black/5 dark:border-white/5 flex flex-col gap-2">
             <Link
-              to="/auth/login"
+              href="/auth/login"
               onClick={() => setMobileOpen(false)}
               className="block text-center text-xs font-bold uppercase tracking-wider py-3 border border-black/10 dark:border-white/15 rounded-full text-zinc-900 dark:text-white"
             >
               Đăng nhập
             </Link>
             <Link
-              to="/auth/register"
+              href="/auth/register"
               onClick={() => setMobileOpen(false)}
               className="block text-center text-xs font-bold uppercase tracking-wider bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 px-4 py-3 rounded-full"
             >

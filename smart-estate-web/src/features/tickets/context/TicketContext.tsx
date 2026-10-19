@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 
 export type TicketStatus = "Mới tạo" | "Đang xử lý" | "Chờ nghiệm thu" | "Hoàn thành";

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Building2, ArrowUpRight, Phone, MapPin, Clock } from "lucide-react";
 
 export const Footer = () => {
@@ -25,7 +25,7 @@ export const Footer = () => {
                 </p>
                 <div className="pt-2">
                   <Link
-                    to="/auth/register"
+                    href="/auth/register"
                     className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-xs font-bold uppercase tracking-wider hover:opacity-90 transition shadow-sm"
                   >
                     <span>Tư vấn trực tiếp ngay</span>
@@ -38,10 +38,10 @@ export const Footer = () => {
               <div className="space-y-4">
                 <h5 className="text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Đường dẫn nhanh</h5>
                 <ul className="space-y-2.5 text-xs font-medium text-zinc-600 dark:text-zinc-400">
-                  <li><Link to="/properties" className="hover:text-zinc-950 dark:hover:text-white transition">Danh mục Bất động sản</Link></li>
-                  <li><Link to="/properties" className="hover:text-zinc-950 dark:hover:text-white transition">Biệt thự & Căn hộ cao cấp</Link></li>
-                  <li><Link to="/dashboard" className="hover:text-zinc-950 dark:hover:text-white transition">Kênh Môi giới & Cố vấn</Link></li>
-                  <li><Link to="/dashboard/appointments" className="hover:text-zinc-950 dark:hover:text-white transition">Đặt lịch hẹn tư vấn</Link></li>
+                  <li><Link href="/properties" className="hover:text-zinc-950 dark:hover:text-white transition">Danh mục Bất động sản</Link></li>
+                  <li><Link href="/properties" className="hover:text-zinc-950 dark:hover:text-white transition">Biệt thự & Căn hộ cao cấp</Link></li>
+                  <li><Link href="/dashboard" className="hover:text-zinc-950 dark:hover:text-white transition">Kênh Môi giới & Cố vấn</Link></li>
+                  <li><Link href="/dashboard/appointments" className="hover:text-zinc-950 dark:hover:text-white transition">Đặt lịch hẹn tư vấn</Link></li>
                 </ul>
               </div>
             </div>

@@ -1,4 +1,7 @@
-import { NavLink, Outlet } from "react-router-dom";
+"use client";
+
+import type { ReactNode } from "react";
+import { NavLink } from "@/components/common/NavLink";
 import { BookOpen, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -11,7 +14,7 @@ const TABS = [
  * BlogLayout — Shared layout for /blog, /blog/articles, /blog/articles/:slug, /blog/listings
  * Two top-level tabs: Tin tức | Rao vặt
  */
-export const BlogLayout = () => {
+export const BlogLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="space-y-6">
       {/* ── Tab Navigation ── */}
@@ -19,7 +22,7 @@ export const BlogLayout = () => {
         {TABS.map(tab => (
           <NavLink
             key={tab.path}
-            to={tab.path}
+            href={tab.path}
             end={tab.end}
             className={({ isActive }) =>
               cn(
@@ -37,7 +40,7 @@ export const BlogLayout = () => {
       </div>
 
       {/* ── Content ── */}
-      <Outlet />
+      {children}
     </div>
   );
 };

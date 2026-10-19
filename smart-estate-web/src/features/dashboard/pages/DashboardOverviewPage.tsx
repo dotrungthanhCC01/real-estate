@@ -1,5 +1,7 @@
+"use client";
+
 import { Calendar as CalendarIcon, Search, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Building } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 const STATS = [
   { label: "Total expenses", value: "$3,250", change: "+5.4%", positive: false, icon: Building },
@@ -78,7 +80,7 @@ export const DashboardOverviewPage = () => {
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-3">
               Favorite listings 
-              <Link to="/dashboard/favorites" className="text-[12px] font-medium text-zinc-400 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1 transition-colors">
+              <Link href="/dashboard/favorites" className="text-[12px] font-medium text-zinc-400 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1 transition-colors">
                 View all <ArrowUpRight size={12} />
               </Link>
             </h3>
@@ -127,7 +129,7 @@ export const DashboardOverviewPage = () => {
         <div className="space-y-4">
           <h3 className="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-3">
             Recent messages
-            <Link to="/dashboard/chat" className="text-[12px] font-medium text-zinc-400 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1 transition-colors">
+            <Link href="/dashboard/chat" className="text-[12px] font-medium text-zinc-400 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1 transition-colors">
               View all <ArrowUpRight size={12} />
             </Link>
           </h3>

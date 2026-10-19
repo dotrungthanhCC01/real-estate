@@ -1,3 +1,5 @@
+"use client";
+
 import { Users, Phone, Mail, MessageSquare, MoreVertical } from "lucide-react";
 
 const TENANTS = [

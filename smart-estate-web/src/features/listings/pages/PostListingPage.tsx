@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import {
   Building2,
@@ -18,7 +20,7 @@ import {
   UserCheck,
   Check,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { CITIES, PROPERTY_TYPES_OPTIONS, type PropertyType, type ListingType } from "@/features/properties/data/mockProperties";
 
 const STEPS = [
@@ -239,7 +241,7 @@ export const PostListingPage = () => {
           {/* Action Navigation */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
-              to="/dashboard/my-listings"
+              href="/dashboard/my-listings"
               className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 text-[13px] font-extrabold hover:opacity-90 transition-all shadow-md"
             >
               Quản lý tin đăng của tôi
@@ -255,7 +257,7 @@ export const PostListingPage = () => {
               Đăng thêm tin khác
             </button>
             <Link
-              to="/home"
+              href="/home"
               className="w-full sm:w-auto px-5 py-3 rounded-2xl text-[13px] font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors"
             >
               Về trang chủ

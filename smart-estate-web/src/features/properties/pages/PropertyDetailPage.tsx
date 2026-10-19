@@ -1,5 +1,8 @@
+"use client";
+
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import {
   MapPin,
   Bed,
@@ -101,7 +104,7 @@ export const PropertyDetailPage = () => {
         <div className="max-w-[1440px] mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2 text-[13px] text-zinc-400">
             <Link
-              to="/home"
+              href="/home"
               className="hover:text-zinc-900 dark:hover:text-white transition-colors flex items-center gap-1.5 font-medium"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -109,7 +112,7 @@ export const PropertyDetailPage = () => {
             </Link>
             <span>/</span>
             <Link
-              to="/properties"
+              href="/properties"
               className="hover:text-zinc-900 dark:hover:text-white transition-colors font-medium"
             >
               Bất động sản
@@ -487,7 +490,7 @@ export const PropertyDetailPage = () => {
                 </Button>
 
                 <div className="flex gap-2">
-                  <Link to="/dashboard/chat" className="flex-1">
+                  <Link href="/dashboard/chat" className="flex-1">
                     <Button
                       variant="outline"
                       size="lg"
@@ -534,7 +537,7 @@ export const PropertyDetailPage = () => {
                   Bất động sản tương tự dành cho bạn
                 </h2>
               </div>
-              <Link to="/properties">
+              <Link href="/properties">
                 <Button variant="outline" className="rounded-full text-[13px] font-bold">
                   Xem tất cả
                 </Button>
@@ -545,7 +548,7 @@ export const PropertyDetailPage = () => {
               {similarProperties.map((sim) => (
                 <Link
                   key={sim.id}
-                  to={`/properties/${sim.id}`}
+                  href={`/properties/${sim.id}`}
                   className="group flex flex-col bg-white dark:bg-[#151518] rounded-2xl overflow-hidden border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs hover:shadow-xl transition-all"
                 >
                   <div className="relative aspect-[16/10] overflow-hidden bg-zinc-100 dark:bg-zinc-800">

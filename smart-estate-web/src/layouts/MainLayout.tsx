@@ -1,7 +1,9 @@
-import { Outlet } from "react-router-dom";
+"use client";
+
+import type { ReactNode } from "react";
 import { Header } from "@/components/common/Header";
 
-export const MainLayout = () => {
+export const MainLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="min-h-screen w-full flex flex-col bg-background text-foreground">
       {/* Floating Transparent Glass Header */}
@@ -9,7 +11,7 @@ export const MainLayout = () => {
 
       {/* Main Content Area */}
       <main className="flex-1 w-full relative">
-        <Outlet />
+        {children}
       </main>
     </div>
   );

@@ -7,7 +7,7 @@ Dự án Frontend cho hệ thống Quản lý & Giao dịch Bất động sản 
 
 ## 🛠️ Công Nghệ Sử Dụng (Tech Stack)
 
-- **Core**: React 19, TypeScript, Vite
+- **Core**: React 19, TypeScript, Next.js 16 (App Router)
 - **UI & Styling**: Tailwind CSS v4, Shadcn UI, Lucide Icons
 - **State Management**: Jotai (Global state), TanStack Query v5 (Server state)
 - **Routing**: React Router DOM v7
@@ -42,7 +42,7 @@ src/
 ├── hooks/                   # Custom Hooks dùng chungToàn dự án (useDebounce,...)
 ├── layouts/                 # Khung Layout trang (MainLayout, DashboardLayout,...)
 ├── lib/                     # Khởi tạo Axios, QueryClient, Socket connection
-├── routes/                  # Cấu hình danh sách đường dẫn (AppRouter)
+├── app/                     # Next.js App Router (layout.tsx / page.tsx)
 ├── store/                   # State toàn cục với Jotai (authAtom, themeAtom)
 └── types/                   # Định nghĩa dữ liệu chung toàn ứng dụng
 ```

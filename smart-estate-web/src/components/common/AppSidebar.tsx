@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   Building2,
   Home,
@@ -30,7 +31,8 @@ interface AppSidebarProps {
 export const AppSidebar = ({ onToggleCollapse }: AppSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const { theme, toggleTheme } = useTheme();
-  const location = useLocation();
+  const pathname = usePathname();
+  const currentSearch = useSearchParams().toString();
 
   const handleToggle = () => {
     const next = !collapsed;
@@ -44,13 +46,13 @@ export const AppSidebar = ({ onToggleCollapse }: AppSidebarProps) => {
    */
   const isActive = (href: string) => {
     const [targetPath, targetQuery] = href.split("?");
-    if (location.pathname !== targetPath) return false;
+    if (pathname !== targetPath) return false;
 
     if (!targetQuery) {
-      return !location.search;
+      return !currentSearch;
     }
 
-    const currentParams = new URLSearchParams(location.search);
+    const currentParams = new URLSearchParams(currentSearch);
     const targetParams = new URLSearchParams(targetQuery);
 
     let isMatch = true;
@@ -93,7 +95,7 @@ export const AppSidebar = ({ onToggleCollapse }: AppSidebarProps) => {
     return (
       <Link
         key={item.href}
-        to={item.href}
+        href={item.href}
         title={collapsed ? item.label : undefined}
         className={cn(
           "group relative flex items-center gap-3 px-2.5 py-2 rounded-xl text-[12.5px] font-semibold transition-all duration-200 whitespace-nowrap",
@@ -137,7 +139,7 @@ export const AppSidebar = ({ onToggleCollapse }: AppSidebarProps) => {
       {/* ── Brand ── */}
       <div className={cn("flex items-center px-1 pt-1 pb-3", collapsed && "justify-center")}>
         <Link
-          to="/home"
+          href="/home"
           className={cn("flex items-center gap-2.5 group focus:outline-none", collapsed ? "justify-center" : "w-full")}
         >
           <div className="w-9 h-9 rounded-2xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform duration-200">
@@ -195,7 +197,7 @@ export const AppSidebar = ({ onToggleCollapse }: AppSidebarProps) => {
 
         {/* Account */}
         <Link
-          to="/auth/login"
+          href="/auth/login"
           className={cn(
             "flex items-center gap-2.5 px-1.5 py-1 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all whitespace-nowrap",
             collapsed && "justify-center px-0"

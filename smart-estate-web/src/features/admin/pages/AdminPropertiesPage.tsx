@@ -1,3 +1,5 @@
+"use client";
+
 import { Building2, CheckCircle, XCircle, Eye, Search } from "lucide-react";
 import { useState } from "react";
 

@@ -1,4 +1,7 @@
-import { useParams, Link } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { Clock, Share2, ChevronLeft, User } from "lucide-react";
 import { MOCK_ARTICLES } from "@/features/blog/data/mockBlogData";
 
@@ -10,7 +13,7 @@ export const ArticleDetailPage = () => {
     return (
       <div className="max-w-3xl mx-auto py-20 text-center">
         <p className="text-zinc-400 text-sm mb-4">Bài viết không tồn tại.</p>
-        <Link to="/blog/articles" className="text-sm font-semibold text-zinc-900 dark:text-white underline">
+        <Link href="/blog/articles" className="text-sm font-semibold text-zinc-900 dark:text-white underline">
           ← Quay lại danh sách
         </Link>
       </div>
@@ -50,9 +53,9 @@ export const ArticleDetailPage = () => {
 
       {/* ── Breadcrumb ── */}
       <div className="flex items-center gap-2 text-[12px] text-zinc-500 mb-6">
-        <Link to="/blog" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Blog</Link>
+        <Link href="/blog" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Blog</Link>
         <span>/</span>
-        <Link to="/blog/articles" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Bài viết</Link>
+        <Link href="/blog/articles" className="hover:text-zinc-900 dark:hover:text-white transition-colors">Bài viết</Link>
         <span>/</span>
         <span className="text-zinc-900 dark:text-white truncate max-w-[200px]">{article.title}</span>
       </div>
@@ -132,13 +135,13 @@ export const ArticleDetailPage = () => {
         <div className="mt-10">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-zinc-900 dark:text-white">Bài viết liên quan</h2>
-            <Link to="/blog/articles" className="text-[12px] text-zinc-500 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1 transition-colors">
+            <Link href="/blog/articles" className="text-[12px] text-zinc-500 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1 transition-colors">
               Xem tất cả <ChevronLeft size={12} className="rotate-180" />
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {related.map(a => (
-              <Link key={a.id} to={`/blog/articles/${a.slug}`} className="group">
+              <Link key={a.id} href={`/blog/articles/${a.slug}`} className="group">
                 <div className="aspect-[4/3] rounded-xl overflow-hidden mb-2">
                   <img src={a.coverImage} alt={a.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>
@@ -152,7 +155,7 @@ export const ArticleDetailPage = () => {
 
       {/* ── Back link ── */}
       <div className="mt-10">
-        <Link to="/blog/articles" className="flex items-center gap-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">
+        <Link href="/blog/articles" className="flex items-center gap-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">
           <ChevronLeft size={14} /> Quay lại danh sách bài viết
         </Link>
       </div>

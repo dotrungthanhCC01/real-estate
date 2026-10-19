@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { Plus, PenTool, CheckCircle2, Clock, Wrench, Star } from "lucide-react";
 import { useTickets, type TicketCategory } from "@/features/tickets/context/TicketContext";

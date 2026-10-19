@@ -1,4 +1,8 @@
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+"use client";
+
+import type { ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import { NavLink } from "@/components/common/NavLink";
 import {
   LayoutDashboard, Heart, Calendar, MessageSquare, LogOut,
   Bell, Plus, Headphones,
@@ -12,13 +16,13 @@ const NAV_ITEMS = [
   { label: "Messages", path: "/dashboard/chat", icon: MessageSquare },
 ];
 
-export const DashboardLayout = () => {
+export const DashboardLayout = ({ children }: { children: ReactNode }) => {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleLogout = () => {
     logout();
-    navigate("/auth/login");
+    router.push("/auth/login");
   };
 
   const currentDate = new Date().toLocaleDateString('en-GB', {
@@ -57,7 +61,7 @@ export const DashboardLayout = () => {
             return (
               <NavLink
                 key={item.path}
-                to={item.path}
+                href={item.path}
                 end={item.end}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition-all duration-150 ${
@@ -118,7 +122,7 @@ export const DashboardLayout = () => {
         </header>
 
         <main className="flex-1 px-8 pb-8 overflow-y-auto">
-          <Outlet />
+          {children}
         </main>
       </div>
     </div>
