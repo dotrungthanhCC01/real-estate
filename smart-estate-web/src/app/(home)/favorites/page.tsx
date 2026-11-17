@@ -1,5 +1,5 @@
-import { AppHomePage } from "@/views/AppHomePage";
+import { FavoritesPage } from "@/features/favorites/pages/FavoritesPage";
 
 export default function Page() {
-  return <AppHomePage />;
+  return <FavoritesPage />;
 }

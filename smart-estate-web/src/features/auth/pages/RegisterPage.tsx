@@ -7,13 +7,20 @@ import { User, Mail, Lock, UserPlus, Building2 } from "lucide-react";
 import type { UserRole } from "@/features/auth/types/auth.types";
 import { useAuth } from "@/features/auth/context/AuthContext";
 
+// Chỉ 2 vai trò được tự đăng ký. Tài khoản Quản trị do admin tạo ở trang quản trị (thêm nhân viên).
+type RegisterRole = Exclude<UserRole, "admin">;
+const REGISTER_ROLES: { value: RegisterRole; label: string }[] = [
+  { value: "user", label: "Người Dùng" },
+  { value: "landlord", label: "Chủ Trọ" },
+];
+
 export const RegisterPage = () => {
   const { login } = useAuth(); // For demo auto-login after register
   const router = useRouter();
   const pathname = usePathname();
   const isLogin = pathname.includes("/auth/login");
 
-  const [selectedRole, setSelectedRole] = useState<UserRole>("user");
+  const [selectedRole, setSelectedRole] = useState<RegisterRole>("user");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,12 +29,10 @@ export const RegisterPage = () => {
     e.preventDefault();
     // Simulate registration then login
     login(email, password, selectedRole);
-    if (selectedRole === "admin") router.push("/admin");
-    else if (selectedRole === "landlord") router.push("/landlord");
-    else router.push("/home");
+    router.push(selectedRole === "landlord" ? "/landlord" : "/home");
   };
 
-  const roleTabIndex = selectedRole === "user" ? 0 : selectedRole === "landlord" ? 1 : 2;
+  const roleTabIndex = REGISTER_ROLES.findIndex((r) => r.value === selectedRole);
 
   return (
     <div className="flex flex-col w-full">
@@ -70,19 +75,20 @@ export const RegisterPage = () => {
       <div className="mb-6">
         <div className="relative flex bg-zinc-100 dark:bg-zinc-800/80 p-1 rounded-xl border border-zinc-200/50 dark:border-zinc-700/50">
           <div
-            className="absolute top-1 bottom-1 w-[calc(33.333%-4px)] bg-white dark:bg-zinc-700/90 rounded-lg shadow-sm border border-zinc-200/60 dark:border-zinc-600/60 transition-transform duration-300 ease-in-out"
-            style={{ transform: `translateX(${roleTabIndex * 100}%)`, left: `${roleTabIndex * 4}px` }}
+            className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-zinc-700/90 rounded-lg shadow-sm border border-zinc-200/60 dark:border-zinc-600/60 transition-transform duration-300 ease-in-out"
+            // 2 tab: thanh trượt rộng 1/2 (trừ padding), cách mép trái 4px (= p-1), trượt 100% để sang tab 2
+            style={{ transform: `translateX(${roleTabIndex * 100}%)`, left: "4px" }}
           />
-          {(["user", "landlord", "admin"] as UserRole[]).map((r) => (
+          {REGISTER_ROLES.map((r) => (
             <button
-              key={r}
+              key={r.value}
               type="button"
-              onClick={() => setSelectedRole(r)}
+              onClick={() => setSelectedRole(r.value)}
               className={`relative z-10 flex-1 py-2 text-[12px] font-semibold transition-all duration-200 cursor-pointer ${
-                selectedRole === r ? "text-zinc-900 dark:text-white" : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400"
+                selectedRole === r.value ? "text-zinc-900 dark:text-white" : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400"
               }`}
             >
-              {r === "user" ? "Người Dùng" : r === "landlord" ? "Chủ Trọ" : "Quản Trị"}
+              {r.label}
             </button>
           ))}
         </div>
@@ -94,7 +100,7 @@ export const RegisterPage = () => {
           Tạo tài khoản mới
         </h1>
         <p className="text-[13.5px] text-zinc-500 dark:text-zinc-400">
-          Đăng ký tài khoản Khách hàng hoặc Nhà Môi Giới.
+          Đăng ký tài khoản Người dùng hoặc Chủ trọ.
         </p>
       </div>
 

@@ -1,8 +1,13 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useRef } from "react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+  usePathname,
+  useRouter,
+  useSearchParams,
+  type ReadonlyURLSearchParams,
+} from "next/navigation";
 import {
   Search,
   MapPin,
@@ -25,6 +30,7 @@ import {
 } from "@/features/properties/data/mockProperties";
 import { CustomSelect } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { useFavorites } from "@/features/favorites/context/FavoritesContext";
 import { PropertySearchHeader } from "@/features/properties/components/PropertySearchHeader";
 import {
   PropertyFilterModal,
@@ -47,7 +53,8 @@ const PropertyGridCard = ({
   isComparing?: boolean;
   onToggleCompare?: (id: string) => void;
 }) => {
-  const [liked, setLiked] = useState(false);
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const liked = isFavorite(property.id);
 
   return (
     <Link
@@ -61,7 +68,7 @@ const PropertyGridCard = ({
       }`}
     >
       {/* Image Banner */}
-      <div className="relative aspect-[16/10] overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+      <div className="relative aspect-16/10 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
         <img
           src={property.thumbnailUrl}
           alt={property.title}
@@ -102,7 +109,7 @@ const PropertyGridCard = ({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              setLiked((v) => !v);
+              toggleFavorite(property.id);
             }}
             className="w-9 h-9 rounded-full bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-all"
           >
@@ -185,7 +192,8 @@ const PropertyListCard = ({
   isComparing?: boolean;
   onToggleCompare?: (id: string) => void;
 }) => {
-  const [liked, setLiked] = useState(false);
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const liked = isFavorite(property.id);
 
   return (
     <Link
@@ -199,7 +207,7 @@ const PropertyListCard = ({
       }`}
     >
       {/* Thumbnail */}
-      <div className="relative sm:w-56 aspect-[16/10] sm:aspect-auto overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0">
+      <div className="relative sm:w-56 aspect-16/10 sm:aspect-auto overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0">
         <img
           src={property.thumbnailUrl}
           alt={property.title}
@@ -239,7 +247,7 @@ const PropertyListCard = ({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  setLiked(!liked);
+                  toggleFavorite(property.id);
                 }}
                 className="w-8 h-8 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-rose-500 transition-colors"
               >
@@ -289,6 +297,29 @@ const PropertyListCard = ({
   );
 };
 
+// ─── Đọc bộ lọc từ query string ─────────────────────────────────────────────────
+const filtersFromSearchParams = (
+  searchParams: URLSearchParams | ReadonlyURLSearchParams
+): PropertyFilterValues => ({
+  keyword: searchParams.get("q") || "",
+  region: "all",
+  city: searchParams.get("city") || "",
+  district: searchParams.get("district") || "",
+  ward: searchParams.get("ward") || "",
+  listingType: (searchParams.get("type") as "" | "buy" | "rent") || "",
+  propertyType: searchParams.get("category") || "",
+  posterType: searchParams.get("poster") || "",
+  priceRange: searchParams.get("price") || "",
+  minPrice: "",
+  maxPrice: "",
+  bedrooms: searchParams.get("beds") || "",
+  bathrooms: "",
+  minArea: "",
+  maxArea: "",
+  direction: "",
+  amenities: [],
+});
+
 // ─── Main PropertyListPage ──────────────────────────────────────────────────────
 export const PropertyListPage = () => {
   const searchParams = useSearchParams();
@@ -325,47 +356,17 @@ export const PropertyListPage = () => {
     [compareIds]
   );
 
-  const [filters, setFilters] = useState<PropertyFilterValues>({
-    keyword: searchParams.get("q") || "",
-    region: "all",
-    city: searchParams.get("city") || "",
-    district: searchParams.get("district") || "",
-    ward: searchParams.get("ward") || "",
-    listingType: (searchParams.get("type") as "" | "buy" | "rent") || "",
-    propertyType: searchParams.get("category") || "",
-    posterType: searchParams.get("poster") || "",
-    priceRange: searchParams.get("price") || "",
-    minPrice: "",
-    maxPrice: "",
-    bedrooms: searchParams.get("beds") || "",
-    bathrooms: "",
-    minArea: "",
-    maxArea: "",
-    direction: "",
-    amenities: [],
-  });
+  const [filters, setFilters] = useState<PropertyFilterValues>(() =>
+    filtersFromSearchParams(searchParams)
+  );
 
-  useEffect(() => {
-    setFilters({
-      keyword: searchParams.get("q") || "",
-      region: "all",
-      city: searchParams.get("city") || "",
-      district: searchParams.get("district") || "",
-      ward: searchParams.get("ward") || "",
-      listingType: (searchParams.get("type") as "" | "buy" | "rent") || "",
-      propertyType: searchParams.get("category") || "",
-      posterType: searchParams.get("poster") || "",
-      priceRange: searchParams.get("price") || "",
-      minPrice: "",
-      maxPrice: "",
-      bedrooms: searchParams.get("beds") || "",
-      bathrooms: "",
-      minArea: "",
-      maxArea: "",
-      direction: "",
-      amenities: [],
-    });
-  }, [searchParams]);
+  // Đồng bộ filters khi URL thay đổi (back/forward, link từ trang khác).
+  // Cập nhật state ngay trong lúc render thay vì dùng useEffect để tránh render 2 lần.
+  const [prevSearchParams, setPrevSearchParams] = useState(searchParams);
+  if (searchParams !== prevSearchParams) {
+    setPrevSearchParams(searchParams);
+    setFilters(filtersFromSearchParams(searchParams));
+  }
 
   const applyFilters = (newFilters: PropertyFilterValues) => {
     setFilters(newFilters);
