@@ -7,6 +7,7 @@ import { queryClient } from "@/lib/react-query";
 import { ThemeProvider } from "@/store/theme.context";
 import { AuthProvider } from "@/features/auth/context/AuthContext";
 import { TicketProvider } from "@/features/tickets/context/TicketContext";
+import { FavoritesProvider } from "@/features/favorites/context/FavoritesContext";
 
 const subscribe = () => () => {};
 
@@ -23,10 +24,12 @@ export function Providers({ children }: { children: ReactNode }) {
     <ThemeProvider>
       <AuthProvider>
         <TicketProvider>
-          <QueryClientProvider client={queryClient}>
-            {children}
-            <ReactQueryDevtools initialIsOpen={false} />
-          </QueryClientProvider>
+          <FavoritesProvider>
+            <QueryClientProvider client={queryClient}>
+              {children}
+              <ReactQueryDevtools initialIsOpen={false} />
+            </QueryClientProvider>
+          </FavoritesProvider>
         </TicketProvider>
       </AuthProvider>
     </ThemeProvider>

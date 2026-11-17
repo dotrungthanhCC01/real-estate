@@ -25,11 +25,13 @@ import {
   type Property,
 } from "@/features/properties/data/mockProperties";
 import { Button } from "@/components/ui/button";
+import { useFavorites } from "@/features/favorites/context/FavoritesContext";
 import { CustomSelect } from "@/components/ui/select";
 
 // ─── Minimalist Luxury Property Card ──────────────────────────────────────────
 const LuxuryPropertyCard = ({ property }: { property: Property }) => {
-  const [liked, setLiked] = useState(false);
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const liked = isFavorite(property.id);
 
   return (
     <Link
@@ -60,7 +62,7 @@ const LuxuryPropertyCard = ({ property }: { property: Property }) => {
         <button
           onClick={(e) => {
             e.preventDefault();
-            setLiked((v) => !v);
+            toggleFavorite(property.id);
           }}
           className="absolute top-3.5 right-3.5 w-9 h-9 rounded-full bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-all z-10"
         >

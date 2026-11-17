@@ -22,6 +22,14 @@ import {
   GitCompare,
 } from "lucide-react";
 import { useTheme } from "@/store/theme.context";
+import { useAuth } from "@/features/auth/context/AuthContext";
+import type { UserRole } from "@/features/auth/types/auth.types";
+
+const ACCOUNT_HREF: Record<UserRole, string> = {
+  user: "/account",
+  landlord: "/landlord",
+  admin: "/admin",
+};
 import { cn } from "@/lib/utils";
 
 interface AppSidebarProps {
@@ -32,6 +40,7 @@ export const AppSidebar = ({ onToggleCollapse }: AppSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
+  const { user } = useAuth();
   const currentSearch = useSearchParams().toString();
 
   const handleToggle = () => {
@@ -195,9 +204,9 @@ export const AppSidebar = ({ onToggleCollapse }: AppSidebarProps) => {
           {!collapsed && <span className="truncate text-[12px]">{theme === "dark" ? "Giao diện Sáng" : "Giao diện Tối"}</span>}
         </button>
 
-        {/* Account */}
+        {/* Account: đã đăng nhập → trang tài khoản theo vai trò, chưa → trang đăng nhập */}
         <Link
-          href="/auth/login"
+          href={user ? ACCOUNT_HREF[user.role] : "/auth/login"}
           className={cn(
             "flex items-center gap-2.5 px-1.5 py-1 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all whitespace-nowrap",
             collapsed && "justify-center px-0"
@@ -208,8 +217,10 @@ export const AppSidebar = ({ onToggleCollapse }: AppSidebarProps) => {
           </div>
           {!collapsed && (
             <div className="flex flex-col truncate">
-              <span className="text-[12px] font-bold text-zinc-900 dark:text-white leading-tight truncate">Tài khoản</span>
-              <span className="text-[10px] text-zinc-400 truncate">Đăng nhập / Đăng ký</span>
+              <span className="text-[12px] font-bold text-zinc-900 dark:text-white leading-tight truncate">
+                {user ? user.name : "Tài khoản"}
+              </span>
+              <span className="text-[10px] text-zinc-400 truncate">{user ? user.email : "Đăng nhập / Đăng ký"}</span>
             </div>
           )}
         </Link>
