@@ -9,6 +9,7 @@ import type {
 } from "@/features/auth/types/auth.types";
 import { authApi } from "@/features/auth/api/auth.api";
 import { ApiError, SESSION_EXPIRED_EVENT, tokenStorage } from "@/lib/axios";
+import { queryClient } from "@/lib/react-query";
 
 /** Lưu user để hiển thị ngay khi tải lại trang; nguồn thật vẫn là GET /auth/me. */
 const STORAGE_KEY = "smart_estate_auth";
@@ -34,6 +35,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const clearSession = useCallback(() => {
     tokenStorage.clear();
+    // Xóa cache dữ liệu của người dùng cũ (vd. tài khoản ngân hàng) trước khi người khác đăng nhập
+    queryClient.clear();
     setUser(null);
   }, []);
 
@@ -58,6 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string) => {
     const tokens = await authApi.login(email, password);
     tokenStorage.set(tokens.accessToken, tokens.refreshToken);
+    queryClient.clear();
     try {
       const me = await authApi.me();
       setUser(me);

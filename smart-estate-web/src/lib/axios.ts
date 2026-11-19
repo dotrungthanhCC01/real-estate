@@ -53,6 +53,9 @@ const FIELD_LABEL: Record<string, string> = {
   password: "Mật khẩu",
   fullName: "Họ và tên",
   role: "Vai trò",
+  bankName: "Ngân hàng",
+  accountNumber: "Số tài khoản",
+  accountHolder: "Chủ tài khoản",
 };
 
 /** Câu báo lỗi hiển thị cho người dùng, kèm tên trường khi backend báo VALIDATION_FAILED. */
