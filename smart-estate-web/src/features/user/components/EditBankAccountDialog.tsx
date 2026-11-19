@@ -97,7 +97,7 @@ const BankAccountForm = ({ current, suggestedHolder, onClose }: FormProps) => {
         <DialogClose onClick={onClose} />
       </DialogHeader>
 
-      <DialogContent className="grid gap-6 space-y-0 sm:grid-cols-[230px_1fr]">
+      <DialogContent className="grid gap-6 space-y-0 sm:grid-cols-[250px_1fr]">
         {/* ── Cột trái: xem trước ── */}
         <div className="space-y-3">
           <BankCardVisual bankName={bankName} holder={toBankHolderName(holder).trim()} liveNumber={accountNumber} />

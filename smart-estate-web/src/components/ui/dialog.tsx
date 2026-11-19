@@ -1,4 +1,5 @@
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -23,9 +24,11 @@ export const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
     };
   }, [open, onOpenChange]);
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
-  return (
+  // Portal ra <body>: modal đặt trong khối sticky/transform (tạo stacking context riêng)
+  // vẫn nổi trên toàn trang thay vì bị nội dung khác đè lên.
+  return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
       {/* Backdrop overlay with fade */}
       <div
@@ -37,7 +40,8 @@ export const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
       <div className="relative z-10 w-full max-w-2xl bg-white dark:bg-[#151518] rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-250 my-auto">
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
