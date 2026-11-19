@@ -3,10 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Mail, Lock, Eye, EyeOff, Building2 } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Building2, AlertCircle, Loader2 } from "lucide-react";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import type { UserRole } from "@/features/auth/types/auth.types";
+import { getErrorMessage } from "@/lib/axios";
 
+// Vai trò do backend trả về theo tài khoản, không cần chọn khi đăng nhập
 const ROLE_REDIRECT: Record<UserRole, string> = {
   user: "/home",
   landlord: "/landlord",
@@ -19,18 +21,24 @@ export const LoginPage = () => {
   const pathname = usePathname();
   const isLogin = pathname.includes("/auth/login");
 
-  const [selectedRole, setSelectedRole] = useState<UserRole>("user");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    login(email, password, selectedRole);
-    router.push(ROLE_REDIRECT[selectedRole]);
+    setError(null);
+    setSubmitting(true);
+    try {
+      const user = await login(email, password);
+      router.push(ROLE_REDIRECT[user.role]);
+    } catch (err) {
+      setError(getErrorMessage(err));
+      setSubmitting(false);
+    }
   };
-
-  const roleTabIndex = selectedRole === "user" ? 0 : selectedRole === "landlord" ? 1 : 2;
 
   return (
     <div className="flex flex-col w-full">
@@ -68,28 +76,6 @@ export const LoginPage = () => {
         </Link>
       </div>
 
-      {/* ── Role Selector ── */}
-      <div className="mb-6">
-        <div className="relative flex bg-zinc-100 dark:bg-zinc-800/80 p-1 rounded-xl border border-zinc-200/50 dark:border-zinc-700/50">
-          <div
-            className="absolute top-1 bottom-1 w-[calc(33.333%-4px)] bg-white dark:bg-zinc-700/90 rounded-lg shadow-sm border border-zinc-200/60 dark:border-zinc-600/60 transition-transform duration-300 ease-in-out"
-            style={{ transform: `translateX(${roleTabIndex * 100}%)`, left: `${roleTabIndex * 4}px` }}
-          />
-          {(["user", "landlord", "admin"] as UserRole[]).map((r) => (
-            <button
-              key={r}
-              type="button"
-              onClick={() => setSelectedRole(r)}
-              className={`relative z-10 flex-1 py-2 text-[12px] font-semibold transition-all duration-200 cursor-pointer ${
-                selectedRole === r ? "text-zinc-900 dark:text-white" : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400"
-              }`}
-            >
-              {r === "user" ? "Người Dùng" : r === "landlord" ? "Chủ Trọ" : "Quản Trị"}
-            </button>
-          ))}
-        </div>
-      </div>
-
       {/* ── Heading ── */}
       <div className="mb-6">
         <h1 className="text-[1.75rem] font-extrabold text-zinc-900 dark:text-white leading-tight tracking-tight mb-1.5">
@@ -102,6 +88,16 @@ export const LoginPage = () => {
 
       {/* ── Form ── */}
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 mb-1.5">
+        {error && (
+          <div
+            role="alert"
+            className="flex items-start gap-2 px-3.5 py-2.5 rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/40 text-[12.5px] text-red-700 dark:text-red-300"
+          >
+            <AlertCircle size={15} className="shrink-0 mt-px" />
+            <span>{error}</span>
+          </div>
+        )}
+
         {/* Email */}
         <div className="flex flex-col gap-1.5">
           <label className="text-[12.5px] font-semibold text-zinc-700 dark:text-zinc-300">
@@ -114,6 +110,8 @@ export const LoginPage = () => {
             <input
               id="login-email"
               type="email"
+              required
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@smartestate.vn"
@@ -142,6 +140,8 @@ export const LoginPage = () => {
             <input
               id="login-password"
               type={showPass ? "text" : "password"}
+              required
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Nhập mật khẩu"
@@ -162,9 +162,11 @@ export const LoginPage = () => {
         <button
           id="login-submit"
           type="submit"
-          className="w-full py-3 mt-1.5 rounded-xl bg-zinc-900 dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-100 text-white dark:text-zinc-950 text-[14px] font-bold tracking-wide shadow-[0_4px_16px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_24px_rgba(255,255,255,0.18)] transition-all duration-200 hover:-translate-y-[1px] active:translate-y-0 cursor-pointer"
+          disabled={submitting}
+          className="w-full flex items-center justify-center gap-2 py-3 mt-1.5 rounded-xl bg-zinc-900 dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-100 text-white dark:text-zinc-950 text-[14px] font-bold tracking-wide shadow-[0_4px_16px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_24px_rgba(255,255,255,0.18)] transition-all duration-200 hover:-translate-y-[1px] active:translate-y-0 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
         >
-          Đăng Nhập
+          {submitting && <Loader2 size={16} className="animate-spin" />}
+          {submitting ? "Đang đăng nhập..." : "Đăng Nhập"}
         </button>
       </form>
 

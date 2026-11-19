@@ -33,6 +33,7 @@ import {
   type AppointmentStatus,
 } from "@/features/appointments/data/mockAppointments";
 import { EditProfileDialog } from "@/features/user/components/EditProfileDialog";
+import { BankAccountSection } from "@/features/user/components/BankAccountSection";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const formatDate = (iso: string) => {
@@ -427,6 +428,9 @@ export const AccountPage = () => {
               <QuickTile icon={FileText} label="Điều khoản dịch vụ" onClick={() => setDrawer("terms")} />
             </div>
           </div>
+
+          {/* Tài khoản ngân hàng nhận tiền (API thật) */}
+          <BankAccountSection userName={user.name} />
 
           {/* Đăng xuất */}
           <button
