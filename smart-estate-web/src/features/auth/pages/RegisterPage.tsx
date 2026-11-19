@@ -3,9 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { User, Mail, Lock, UserPlus, Building2 } from "lucide-react";
+import { User, Mail, Lock, UserPlus, Building2, AlertCircle, Loader2 } from "lucide-react";
 import type { UserRole } from "@/features/auth/types/auth.types";
 import { useAuth } from "@/features/auth/context/AuthContext";
+import { getErrorMessage } from "@/lib/axios";
 
 // Chỉ 2 vai trò được tự đăng ký. Tài khoản Quản trị do admin tạo ở trang quản trị (thêm nhân viên).
 type RegisterRole = Exclude<UserRole, "admin">;
@@ -15,7 +16,7 @@ const REGISTER_ROLES: { value: RegisterRole; label: string }[] = [
 ];
 
 export const RegisterPage = () => {
-  const { login } = useAuth(); // For demo auto-login after register
+  const { register } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const isLogin = pathname.includes("/auth/login");
@@ -24,12 +25,25 @@ export const RegisterPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Đăng ký qua API (POST /auth/register) rồi tự đăng nhập
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate registration then login
-    login(email, password, selectedRole);
-    router.push(selectedRole === "landlord" ? "/landlord" : "/home");
+    setError(null);
+    if (password.length < 8) {
+      setError("Mật khẩu cần tối thiểu 8 ký tự");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const user = await register({ fullName: name, email, password, role: selectedRole });
+      router.push(user.role === "landlord" ? "/landlord" : "/home");
+    } catch (err) {
+      setError(getErrorMessage(err));
+      setSubmitting(false);
+    }
   };
 
   const roleTabIndex = REGISTER_ROLES.findIndex((r) => r.value === selectedRole);
@@ -106,6 +120,16 @@ export const RegisterPage = () => {
 
       {/* ── Form ── */}
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 mb-5">
+        {error && (
+          <div
+            role="alert"
+            className="flex items-start gap-2 px-3.5 py-2.5 rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/40 text-[12.5px] text-red-700 dark:text-red-300"
+          >
+            <AlertCircle size={15} className="shrink-0 mt-px" />
+            <span>{error}</span>
+          </div>
+        )}
+
         {/* Full Name */}
         <div className="flex flex-col gap-1.5">
           <label className="text-[12.5px] font-semibold text-zinc-700 dark:text-zinc-300">
@@ -117,6 +141,8 @@ export const RegisterPage = () => {
             </div>
             <input
               type="text"
+              required
+              autoComplete="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Nguyễn Văn A"
@@ -136,6 +162,8 @@ export const RegisterPage = () => {
             </div>
             <input
               type="email"
+              required
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@smartestate.vn"
@@ -155,6 +183,8 @@ export const RegisterPage = () => {
             </div>
             <input
               type="password"
+              required
+              autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Tối thiểu 8 ký tự"
@@ -166,10 +196,11 @@ export const RegisterPage = () => {
         {/* Submit */}
         <button
           type="submit"
-          className="w-full flex items-center justify-center gap-2 py-3 mt-1.5 rounded-xl bg-zinc-900 dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-100 text-white dark:text-zinc-950 text-[14px] font-bold tracking-wide shadow-[0_4px_16px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_24px_rgba(255,255,255,0.18)] transition-all duration-200 hover:-translate-y-[1px] active:translate-y-0 cursor-pointer"
+          disabled={submitting}
+          className="w-full flex items-center justify-center gap-2 py-3 mt-1.5 rounded-xl bg-zinc-900 dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-100 text-white dark:text-zinc-950 text-[14px] font-bold tracking-wide shadow-[0_4px_16px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_24px_rgba(255,255,255,0.18)] transition-all duration-200 hover:-translate-y-[1px] active:translate-y-0 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
         >
-          <UserPlus size={16} />
-          <span>Tạo tài khoản</span>
+          {submitting ? <Loader2 size={16} className="animate-spin" /> : <UserPlus size={16} />}
+          <span>{submitting ? "Đang tạo tài khoản..." : "Tạo tài khoản"}</span>
         </button>
       </form>
 

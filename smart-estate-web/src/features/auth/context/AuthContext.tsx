@@ -1,91 +1,97 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import type {
   AuthContextValue,
   AuthUser,
   EditableProfile,
-  UserRole,
+  RegisterInput,
 } from "@/features/auth/types/auth.types";
+import { authApi } from "@/features/auth/api/auth.api";
+import { ApiError, SESSION_EXPIRED_EVENT, tokenStorage } from "@/lib/axios";
 
-// ─── Mock user data per role (demo / prototype) ───────────────────────────────
-const MOCK_USERS: Record<UserRole, AuthUser> = {
-  user: {
-    id: "u-001",
-    name: "Nguyễn Văn An",
-    email: "user@smartestate.vn",
-    role: "user",
-    phone: "0901 234 567",
-    address: "Bình Thạnh, TP. Hồ Chí Minh",
-    createdAt: "2025-03-14T09:00:00.000Z",
-  },
-  landlord: {
-    id: "l-001",
-    name: "Trần Thị Bích",
-    email: "landlord@smartestate.vn",
-    role: "landlord",
-  },
-  admin: {
-    id: "a-001",
-    name: "Admin Smart Estate",
-    email: "admin@smartestate.vn",
-    role: "admin",
-  },
-};
-
+/** Lưu user để hiển thị ngay khi tải lại trang; nguồn thật vẫn là GET /auth/me. */
 const STORAGE_KEY = "smart_estate_auth";
 
-// ─── Context ──────────────────────────────────────────────────────────────────
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-// ─── Provider ─────────────────────────────────────────────────────────────────
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(() => {
+    // Không có token (vd. phiên mock cũ) thì coi như chưa đăng nhập.
+    if (!tokenStorage.getAccess()) return null;
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (!stored) return null;
-      const parsed = JSON.parse(stored) as AuthUser;
-      // Gộp với dữ liệu mẫu để phiên đăng nhập cũ cũng có các trường mới (phone, createdAt...)
-      return { ...MOCK_USERS[parsed.role], ...parsed };
+      return stored ? (JSON.parse(stored) as AuthUser) : null;
     } catch {
       return null;
     }
   });
 
-  // Persist to localStorage whenever user changes
   useEffect(() => {
-    if (user) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
-    }
+    if (user) localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+    else localStorage.removeItem(STORAGE_KEY);
   }, [user]);
 
-  const login = (_email: string, _password: string, role: UserRole) => {
-    // In production: call API, validate credentials, get JWT
-    // For demo: resolve mock user by role
-    const resolvedUser = MOCK_USERS[role];
-    setUser(resolvedUser);
+  const clearSession = useCallback(() => {
+    tokenStorage.clear();
+    setUser(null);
+  }, []);
+
+  // Khôi phục phiên: có token thì hỏi lại /auth/me (axios tự refresh nếu access token đã hết hạn).
+  useEffect(() => {
+    if (!tokenStorage.getAccess()) return;
+    authApi
+      .me()
+      // Giữ phone/address người dùng tự nhập (backend chưa lưu các trường này)
+      .then((fresh) => setUser((prev) => ({ ...prev, ...fresh })))
+      .catch((err) => {
+        if (err instanceof ApiError && (err.status === 401 || err.status === 403)) clearSession();
+      });
+  }, [clearSession]);
+
+  // Refresh token cũng hết hạn → đăng xuất
+  useEffect(() => {
+    window.addEventListener(SESSION_EXPIRED_EVENT, clearSession);
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, clearSession);
+  }, [clearSession]);
+
+  const login = async (email: string, password: string) => {
+    const tokens = await authApi.login(email, password);
+    tokenStorage.set(tokens.accessToken, tokens.refreshToken);
+    try {
+      const me = await authApi.me();
+      setUser(me);
+      return me;
+    } catch (err) {
+      tokenStorage.clear();
+      throw err;
+    }
+  };
+
+  const register = async (input: RegisterInput) => {
+    await authApi.register(input);
+    return login(input.email, input.password);
   };
 
   const logout = () => {
-    setUser(null);
-    localStorage.removeItem(STORAGE_KEY);
+    const refreshToken = tokenStorage.getRefresh();
+    if (refreshToken) authApi.logout(refreshToken).catch(() => {});
+    clearSession();
   };
 
-  // Demo: cập nhật trực tiếp & lưu localStorage. Khi có API: gọi PUT /me rồi setUser(kết quả).
   const updateProfile = (data: Partial<EditableProfile>) => {
     setUser((prev) => (prev ? { ...prev, ...data } : prev));
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, updateProfile }}>
+    <AuthContext.Provider
+      value={{ user, isAuthenticated: !!user, login, register, logout, updateProfile }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
-// ─── Hook ────────────────────────────────────────────────────────────────────
 export const useAuth = (): AuthContextValue => {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used within <AuthProvider>");
