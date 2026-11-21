@@ -7,6 +7,7 @@ import {
   Heart,
   MessageCircle,
   CalendarDays,
+  ShieldCheck,
   UserRound,
   LockKeyhole,
   X,
@@ -17,7 +18,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { useAuth } from "@/features/auth/context/AuthContext";
 
 // ─── Lý do cần đăng nhập → nội dung modal ────────────────────────────────────
-export type AuthPromptReason = "favorite" | "chat" | "viewing" | "personal" | "generic";
+export type AuthPromptReason = "favorite" | "chat" | "viewing" | "deposit" | "personal" | "generic";
 
 interface PromptContent {
   icon: LucideIcon;
@@ -40,6 +41,11 @@ const CONTENT: Record<AuthPromptReason, PromptContent> = {
     icon: CalendarDays,
     title: "Đăng nhập để đặt lịch xem",
     description: "Gửi yêu cầu xem nhà tới chủ trọ và theo dõi lịch hẹn trong trang Tài khoản.",
+  },
+  deposit: {
+    icon: ShieldCheck,
+    title: "Đăng nhập để đặt cọc",
+    description: "Giữ chỗ ngay 10 phút và thanh toán an toàn qua ví trung gian — tiền chỉ chuyển cho chủ trọ khi bạn nhận phòng.",
   },
   personal: {
     icon: UserRound,
