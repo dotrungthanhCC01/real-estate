@@ -6,6 +6,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { queryClient } from "@/lib/react-query";
 import { ThemeProvider } from "@/store/theme.context";
 import { AuthProvider } from "@/features/auth/context/AuthContext";
+import { AuthPromptProvider } from "@/features/auth/context/AuthPromptContext";
 import { TicketProvider } from "@/features/tickets/context/TicketContext";
 import { FavoritesProvider } from "@/features/favorites/context/FavoritesContext";
 
@@ -23,6 +24,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
       <AuthProvider>
+        <AuthPromptProvider>
         <TicketProvider>
           <FavoritesProvider>
             <QueryClientProvider client={queryClient}>
@@ -31,6 +33,7 @@ export function Providers({ children }: { children: ReactNode }) {
             </QueryClientProvider>
           </FavoritesProvider>
         </TicketProvider>
+        </AuthPromptProvider>
       </AuthProvider>
     </ThemeProvider>
   );

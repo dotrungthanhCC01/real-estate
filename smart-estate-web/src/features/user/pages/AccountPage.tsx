@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   Pencil,
   Mail,
@@ -21,7 +20,9 @@ import {
   ChevronRight,
   UserRound,
   StickyNote,
+  LockKeyhole,
 } from "lucide-react";
+import { authHref, useRequireAuth } from "@/features/auth/context/AuthPromptContext";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { useFavorites } from "@/features/favorites/context/FavoritesContext";
 import { CustomSelect } from "@/components/ui/select";
@@ -290,9 +291,126 @@ const AppointmentDetail = ({ apt, onCancel }: { apt: Appointment; onCancel: () =
   );
 };
 
+// ─── Trạng thái khách: giữ bố cục trang, nội dung cá nhân bị khóa ────────────
+const GuestAccountView = ({ onOpenDrawer }: { onOpenDrawer: (kind: DrawerKind) => void }) => {
+  const { openAuthPrompt } = useRequireAuth();
+
+  return (
+    <div className="max-w-[1400px] mx-auto w-full py-4 space-y-6">
+      <div>
+        <h1 className="text-[1.75rem] font-extrabold tracking-tight text-zinc-900 dark:text-white">Tài khoản</h1>
+        <p className="text-[13px] text-zinc-500 dark:text-zinc-400">
+          Đăng nhập để quản lý thông tin cá nhân và lịch hẹn xem nhà của bạn
+        </p>
+      </div>
+
+      <div className="grid lg:grid-cols-[320px_1fr] gap-6 items-start">
+        <aside className="space-y-4 lg:sticky lg:top-4">
+          <div className="p-5 rounded-xl bg-white dark:bg-[#151518] border border-zinc-200/70 dark:border-zinc-800 shadow-xs">
+            <div className="flex items-center gap-3">
+              <span className="w-14 h-14 rounded-full border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex items-center justify-center text-zinc-400">
+                <UserRound className="w-6 h-6" />
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-[16px] font-extrabold text-zinc-900 dark:text-white">Xin chào, Khách</p>
+                <p className="text-[12.5px] text-zinc-400">Bạn chưa đăng nhập</p>
+              </div>
+            </div>
+
+            <div className="mt-5 flex flex-col gap-2">
+              <Link
+                href={authHref("login", "/account")}
+                className="h-10 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-[13.5px] font-bold flex items-center justify-center no-underline shadow-md hover:-translate-y-px transition-transform"
+              >
+                Đăng nhập
+              </Link>
+              <Link
+                href={authHref("register", "/account")}
+                className="h-10 rounded-xl border border-zinc-200 dark:border-zinc-700 text-[13.5px] font-bold text-zinc-800 dark:text-zinc-100 flex items-center justify-center no-underline hover:border-zinc-900 dark:hover:border-white transition-colors"
+              >
+                Tạo tài khoản mới
+              </Link>
+            </div>
+
+            {/* Thông tin cá nhân: khóa */}
+            <ul className="mt-5 space-y-3 text-[13px]">
+              {[
+                { icon: Mail, label: "Email" },
+                { icon: Phone, label: "Điện thoại" },
+                { icon: MapPin, label: "Khu vực" },
+                { icon: CalendarCheck, label: "Ngày tham gia" },
+              ].map((row) => (
+                <li key={row.label} className="flex items-center gap-3">
+                  <span className="w-9 h-9 rounded-md bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shrink-0">
+                    <row.icon className="w-3.5 h-3.5 text-zinc-400" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[11px] text-zinc-400">{row.label}</p>
+                    <span className="mt-1 block h-2.5 w-28 rounded-full bg-zinc-100 dark:bg-zinc-800" />
+                  </div>
+                  <LockKeyhole className="w-3.5 h-3.5 text-zinc-300 dark:text-zinc-600" />
+                </li>
+              ))}
+            </ul>
+
+            <div className="grid grid-cols-2 gap-2.5 mt-5">
+              <QuickTile
+                icon={CalendarDays}
+                label="Lịch hẹn"
+                onClick={() => openAuthPrompt({ reason: "viewing", title: "Đăng nhập để xem lịch hẹn" })}
+              />
+              <QuickTile icon={Heart} label="BĐS đã lưu" onClick={() => openAuthPrompt({ reason: "favorite", next: "/favorites" })} />
+              <QuickTile icon={LifeBuoy} label="Hỗ trợ" onClick={() => onOpenDrawer("support")} />
+              <QuickTile icon={FileText} label="Điều khoản dịch vụ" onClick={() => onOpenDrawer("terms")} />
+            </div>
+          </div>
+        </aside>
+
+        {/* Lịch hẹn: bản xem trước làm mờ + lời mời đăng nhập */}
+        <section className="relative overflow-hidden p-5 rounded-xl bg-white dark:bg-[#151518] border border-zinc-200/70 dark:border-zinc-800 shadow-xs">
+          <h2 className="text-[1.15rem] font-extrabold text-zinc-900 dark:text-white mb-4">Lịch hẹn xem nhà</h2>
+
+          <div aria-hidden className="space-y-0 blur-[3px] select-none pointer-events-none opacity-70">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="grid grid-cols-[110px_80px_1fr_140px] gap-4 items-center px-1 py-4 border-b border-zinc-100 dark:border-zinc-800">
+                <span className="h-3 w-20 rounded-full bg-zinc-200 dark:bg-zinc-700" />
+                <span className="h-3 w-12 rounded-full bg-zinc-100 dark:bg-zinc-800" />
+                <span className="space-y-1.5">
+                  <span className="block h-3 w-3/4 rounded-full bg-zinc-200 dark:bg-zinc-700" />
+                  <span className="block h-2.5 w-1/3 rounded-full bg-zinc-100 dark:bg-zinc-800" />
+                </span>
+                <span className="h-6 w-24 rounded-md bg-zinc-100 dark:bg-zinc-800" />
+              </div>
+            ))}
+          </div>
+
+          <div className="absolute inset-0 top-14 flex items-center justify-center bg-linear-to-b from-white/40 via-white/80 to-white dark:from-[#151518]/40 dark:via-[#151518]/80 dark:to-[#151518] px-6">
+            <div className="text-center max-w-sm">
+              <span className="mx-auto w-14 h-14 rounded-2xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 flex items-center justify-center shadow-lg">
+                <CalendarDays className="w-6 h-6" />
+              </span>
+              <p className="mt-4 text-[16px] font-extrabold text-zinc-900 dark:text-white">
+                Vui lòng đăng nhập để thao tác với tính năng này
+              </p>
+              <p className="mt-1.5 text-[13px] text-zinc-500 dark:text-zinc-400">
+                Lịch hẹn xem nhà bạn đã đặt sẽ hiện ở đây sau khi đăng nhập.
+              </p>
+              <Link
+                href={authHref("login", "/account")}
+                className="mt-5 inline-flex items-center px-5 h-10 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-[13px] font-bold no-underline shadow-md hover:-translate-y-px transition-transform"
+              >
+                Đăng nhập để xem
+              </Link>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+};
+
 // ─── Trang Tài khoản (vai trò Người dùng) ───────────────────────────────────
 export const AccountPage = () => {
-  const router = useRouter();
   const { user, logout, updateProfile } = useAuth();
   const { favoriteIds } = useFavorites();
 
@@ -349,7 +467,15 @@ export const AccountPage = () => {
   const from = visible.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const to = Math.min(currentPage * pageSize, visible.length);
 
-  if (!user) return null; // ProtectedRoute đã chặn, phòng hờ
+  // Khách chưa đăng nhập: trang ở trạng thái khách (không chuyển hướng)
+  if (!user) {
+    return (
+      <>
+        <GuestAccountView onOpenDrawer={setDrawer} />
+        <InfoDrawer kind={drawer} onClose={() => setDrawer(null)} />
+      </>
+    );
+  }
 
   const cancelAppointment = (id: string) => {
     if (!window.confirm("Bạn chắc chắn muốn hủy lịch hẹn này?")) return;
@@ -358,8 +484,7 @@ export const AccountPage = () => {
 
   const handleLogout = () => {
     if (!window.confirm("Đăng xuất khỏi tài khoản?")) return;
-    logout();
-    router.push("/auth/login");
+    logout(); // ở lại trang: AccountPage tự chuyển sang trạng thái khách
   };
 
   const joined = user.createdAt;

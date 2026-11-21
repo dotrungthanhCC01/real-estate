@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useRequireAuth } from "@/features/auth/context/AuthPromptContext";
+import { useFavorites } from "@/features/favorites/context/FavoritesContext";
 import {
   MapPin,
   Bed,
@@ -64,7 +66,10 @@ const getAmenityIcon = (name: string) => {
 
 export const PropertyDetailPage = () => {
   const { id } = useParams<{ id: string }>();
-  const [liked, setLiked] = useState(false);
+  const router = useRouter();
+  const { requireAuth } = useRequireAuth();
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const liked = isFavorite(id);
   const [showPhone, setShowPhone] = useState(false);
   const [scheduleSent, setScheduleSent] = useState(false);
 
@@ -125,7 +130,8 @@ export const PropertyDetailPage = () => {
 
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setLiked((v) => !v)}
+              onClick={() => toggleFavorite(id)}
+              aria-label={liked ? "Bỏ lưu" : "Lưu BĐS"}
               className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all ${
                 liked
                   ? "border-rose-300 bg-rose-50 text-rose-500 dark:bg-rose-950/30"
@@ -490,19 +496,18 @@ export const PropertyDetailPage = () => {
                 </Button>
 
                 <div className="flex gap-2">
-                  <Link href="/dashboard/chat" className="flex-1">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      className="w-full rounded-2xl border-zinc-200 dark:border-zinc-700 font-bold text-[13px] py-5 gap-1.5"
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                      Chat trực tiếp
-                    </Button>
-                  </Link>
+                  <Button
+                    onClick={() => requireAuth(() => router.push("/dashboard/chat"), { reason: "chat" })}
+                    variant="outline"
+                    size="lg"
+                    className="flex-1 rounded-2xl border-zinc-200 dark:border-zinc-700 font-bold text-[13px] py-5 gap-1.5"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    Chat trực tiếp
+                  </Button>
 
                   <Button
-                    onClick={() => setScheduleSent(true)}
+                    onClick={() => requireAuth(() => setScheduleSent(true), { reason: "viewing" })}
                     variant="outline"
                     size="lg"
                     className="flex-1 rounded-2xl border-zinc-200 dark:border-zinc-700 font-bold text-[13px] py-5 gap-1.5"

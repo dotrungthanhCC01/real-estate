@@ -7,9 +7,11 @@ interface DialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
+  /** Class thêm cho khung modal (vd. đổi độ rộng: "max-w-md") */
+  className?: string;
 }
 
-export const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
+export const Dialog = ({ open, onOpenChange, children, className }: DialogProps) => {
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onOpenChange(false);
@@ -37,7 +39,14 @@ export const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
       />
 
       {/* Dialog container */}
-      <div className="relative z-10 w-full max-w-2xl bg-white dark:bg-[#151518] rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-250 my-auto">
+      <div
+        role="dialog"
+        aria-modal="true"
+        className={cn(
+          "relative z-10 w-full max-w-2xl bg-white dark:bg-[#151518] rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-250 my-auto",
+          className
+        )}
+      >
         {children}
       </div>
     </div>,

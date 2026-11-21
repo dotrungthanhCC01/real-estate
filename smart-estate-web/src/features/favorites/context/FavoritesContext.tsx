@@ -1,6 +1,8 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { useAuth } from "@/features/auth/context/AuthContext";
+import { useRequireAuth } from "@/features/auth/context/AuthPromptContext";
 
 // ─── Favorites (BĐS yêu thích) ────────────────────────────────────────────────
 // Lưu danh sách id BĐS đã thả tim vào localStorage (demo / prototype).
@@ -19,6 +21,8 @@ const STORAGE_KEY = "smart_estate_favorites";
 const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 
 export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
+  const { isAuthenticated } = useAuth();
+  const { requireAuth } = useRequireAuth();
   const [favoriteIds, setFavoriteIds] = useState<string[]>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -36,10 +40,14 @@ export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [favoriteIds]);
 
-  const isFavorite = (id: string) => favoriteIds.includes(id);
+  // Yêu thích cần đăng nhập: khách bấm tim → modal mời đăng nhập (mọi nút tim dùng chung hàm này)
+  const isFavorite = (id: string) => isAuthenticated && favoriteIds.includes(id);
 
   const toggleFavorite = (id: string) =>
-    setFavoriteIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [id, ...prev]));
+    requireAuth(
+      () => setFavoriteIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [id, ...prev])),
+      { reason: "favorite" },
+    );
 
   const removeFavorite = (id: string) => setFavoriteIds((prev) => prev.filter((x) => x !== id));
 
@@ -47,7 +55,13 @@ export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <FavoritesContext.Provider
-      value={{ favoriteIds, isFavorite, toggleFavorite, removeFavorite, clearFavorites }}
+      value={{
+        favoriteIds: isAuthenticated ? favoriteIds : [],
+        isFavorite,
+        toggleFavorite,
+        removeFavorite,
+        clearFavorites,
+      }}
     >
       {children}
     </FavoritesContext.Provider>
