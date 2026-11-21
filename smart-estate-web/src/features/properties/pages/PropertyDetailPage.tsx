@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useRequireAuth } from "@/features/auth/context/AuthPromptContext";
 import { useFavorites } from "@/features/favorites/context/FavoritesContext";
+import { DepositButton } from "@/features/deposits/components/DepositButton";
+import { canDeposit } from "@/features/deposits/utils";
 import {
   MapPin,
   Bed,
@@ -486,10 +488,24 @@ export const PropertyDetailPage = () => {
 
               {/* Action Buttons */}
               <div className="flex flex-col gap-2.5">
+                {/* Đặt cọc giữ chỗ (tin cho thuê) — hành động chính */}
+                <DepositButton property={property} variant="detail" />
+                {canDeposit(property) && (
+                  <p className="-mt-1 flex items-center justify-center gap-1.5 text-[11.5px] text-zinc-400">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                    Giữ chỗ 10 phút · Tiền qua ví trung gian · Hoàn 70% trong 48 giờ
+                  </p>
+                )}
+
                 <Button
                   onClick={() => setShowPhone((v) => !v)}
                   size="lg"
-                  className="rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 font-extrabold text-[14px] py-6 shadow-md"
+                  variant={canDeposit(property) ? "outline" : "default"}
+                  className={
+                    canDeposit(property)
+                      ? "rounded-2xl border-zinc-200 dark:border-zinc-700 font-bold text-[13.5px] py-5"
+                      : "rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 font-extrabold text-[14px] py-6 shadow-md"
+                  }
                 >
                   <Phone className="w-4 h-4 mr-2" />
                   {showPhone ? property.agentPhone : "Show contacts / Hiện SĐT"}

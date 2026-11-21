@@ -31,6 +31,7 @@ import {
 import { CustomSelect } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useFavorites } from "@/features/favorites/context/FavoritesContext";
+import { DepositButton } from "@/features/deposits/components/DepositButton";
 import { PropertySearchHeader } from "@/features/properties/components/PropertySearchHeader";
 import {
   PropertyFilterModal,
@@ -173,6 +174,8 @@ const PropertyGridCard = ({
             </span>
           </div>
         </div>
+
+        <DepositButton property={property} />
       </div>
     </Link>
   );
@@ -292,6 +295,8 @@ const PropertyListCard = ({
             <span className="font-bold text-zinc-700 dark:text-zinc-200">{property.rating.toFixed(1)}</span>
           </div>
         </div>
+
+        <DepositButton property={property} className="mt-3 sm:w-auto sm:px-5 sm:self-end" />
       </div>
     </Link>
   );

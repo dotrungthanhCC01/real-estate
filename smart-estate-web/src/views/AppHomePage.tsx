@@ -26,6 +26,7 @@ import {
 } from "@/features/properties/data/mockProperties";
 import { Button } from "@/components/ui/button";
 import { useFavorites } from "@/features/favorites/context/FavoritesContext";
+import { DepositButton } from "@/features/deposits/components/DepositButton";
 import { CustomSelect } from "@/components/ui/select";
 
 // ─── Minimalist Luxury Property Card ──────────────────────────────────────────
@@ -125,6 +126,8 @@ const LuxuryPropertyCard = ({ property }: { property: Property }) => {
             </span>
           </div>
         </div>
+
+        <DepositButton property={property} />
       </div>
     </Link>
   );
