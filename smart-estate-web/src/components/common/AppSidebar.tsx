@@ -20,17 +20,29 @@ import {
   LayoutList,
   LayoutGrid,
   GitCompare,
+  LockKeyhole,
+  LogIn,
 } from "lucide-react";
 import { useTheme } from "@/store/theme.context";
 import { useAuth } from "@/features/auth/context/AuthContext";
+import { authHref, useRequireAuth } from "@/features/auth/context/AuthPromptContext";
+import { useFavorites } from "@/features/favorites/context/FavoritesContext";
 import type { UserRole } from "@/features/auth/types/auth.types";
+import { cn } from "@/lib/utils";
 
 const ACCOUNT_HREF: Record<UserRole, string> = {
   user: "/account",
   landlord: "/landlord",
   admin: "/admin",
 };
-import { cn } from "@/lib/utils";
+
+const initials = (name: string) =>
+  name
+    .trim()
+    .split(/\s+/)
+    .slice(-2)
+    .map((w) => w[0]?.toUpperCase())
+    .join("");
 
 interface AppSidebarProps {
   onToggleCollapse?: (collapsed: boolean) => void;
@@ -41,7 +53,10 @@ export const AppSidebar = ({ onToggleCollapse }: AppSidebarProps) => {
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
   const { user } = useAuth();
+  const { favoriteIds } = useFavorites();
+  const { openAuthPrompt } = useRequireAuth();
   const currentSearch = useSearchParams().toString();
+  const currentPath = `${pathname}${currentSearch ? `?${currentSearch}` : ""}`;
 
   const handleToggle = () => {
     const next = !collapsed;
@@ -93,10 +108,41 @@ export const AppSidebar = ({ onToggleCollapse }: AppSidebarProps) => {
 
   const USER_ITEMS = [
     { label: "Quản lý BĐS", href: "/my-properties", icon: LayoutList },
-    { label: "BĐS đã lưu", href: "/favorites", icon: Heart, badge: "3" },
+    {
+      label: "BĐS đã lưu",
+      href: "/favorites",
+      icon: Heart,
+      badge: user && favoriteIds.length > 0 ? String(favoriteIds.length) : undefined,
+    },
     { label: "Chat & Tư vấn", href: "/dashboard/chat", icon: MessageCircle },
     { label: "Thanh toán", href: "/dashboard/payment", icon: CreditCard },
   ];
+
+  // Khách bấm mục Cá nhân → modal mời đăng nhập (đăng nhập xong tới đúng mục đó)
+  const renderLockedItem = (item: { label: string; href: string; icon: React.ComponentType<{ className?: string }> }) => {
+    const Icon = item.icon;
+    return (
+      <button
+        key={item.href}
+        type="button"
+        onClick={() => openAuthPrompt({ reason: "personal", title: `Đăng nhập để dùng ${item.label}`, next: item.href })}
+        title={collapsed ? `${item.label} (cần đăng nhập)` : undefined}
+        className={cn(
+          "group relative flex items-center gap-3 px-2.5 py-2 rounded-xl text-[12.5px] font-semibold transition-all duration-200 whitespace-nowrap text-left cursor-pointer",
+          "text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/60",
+          collapsed && "justify-center px-0"
+        )}
+      >
+        <Icon className="w-4 h-4 shrink-0" />
+        {!collapsed && (
+          <>
+            <span className="truncate flex-1">{item.label}</span>
+            <LockKeyhole className="w-3 h-3 shrink-0 opacity-60 group-hover:opacity-100" />
+          </>
+        )}
+      </button>
+    );
+  };
 
   const renderNavLink = (item: { label: string; href: string; icon: React.ComponentType<{ className?: string }>; badge?: string }) => {
     const Icon = item.icon;
@@ -181,7 +227,7 @@ export const AppSidebar = ({ onToggleCollapse }: AppSidebarProps) => {
           {!collapsed && (
             <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest px-2.5 pb-1">Cá nhân</span>
           )}
-          {USER_ITEMS.map((item) => renderNavLink(item))}
+          {USER_ITEMS.map((item) => (user ? renderNavLink(item) : renderLockedItem(item)))}
         </div>
       </div>
 
@@ -204,26 +250,65 @@ export const AppSidebar = ({ onToggleCollapse }: AppSidebarProps) => {
           {!collapsed && <span className="truncate text-[12px]">{theme === "dark" ? "Giao diện Sáng" : "Giao diện Tối"}</span>}
         </button>
 
-        {/* Account: đã đăng nhập → trang tài khoản theo vai trò, chưa → trang đăng nhập */}
-        <Link
-          href={user ? ACCOUNT_HREF[user.role] : "/auth/login"}
-          className={cn(
-            "flex items-center gap-2.5 px-1.5 py-1 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all whitespace-nowrap",
-            collapsed && "justify-center px-0"
-          )}
-        >
-          <div className="w-8 h-8 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-700/60 flex items-center justify-center shrink-0">
-            <User className="w-3.5 h-3.5 text-zinc-700 dark:text-zinc-300" />
-          </div>
-          {!collapsed && (
-            <div className="flex flex-col truncate">
-              <span className="text-[12px] font-bold text-zinc-900 dark:text-white leading-tight truncate">
-                {user ? user.name : "Tài khoản"}
-              </span>
-              <span className="text-[10px] text-zinc-400 truncate">{user ? user.email : "Đăng nhập / Đăng ký"}</span>
+        {user ? (
+          /* Đã đăng nhập → trang tài khoản theo vai trò */
+          <Link
+            href={ACCOUNT_HREF[user.role]}
+            title={collapsed ? user.name : undefined}
+            className={cn(
+              "flex items-center gap-2.5 px-1.5 py-1 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all whitespace-nowrap",
+              collapsed && "justify-center px-0"
+            )}
+          >
+            <div className="w-8 h-8 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 flex items-center justify-center shrink-0 text-[11px] font-extrabold">
+              {initials(user.name) || <User className="w-3.5 h-3.5" />}
             </div>
-          )}
-        </Link>
+            {!collapsed && (
+              <div className="flex flex-col truncate">
+                <span className="text-[12px] font-bold text-zinc-900 dark:text-white leading-tight truncate">{user.name}</span>
+                <span className="text-[10px] text-zinc-400 truncate">{user.email}</span>
+              </div>
+            )}
+          </Link>
+        ) : collapsed ? (
+          /* Khách, sidebar thu gọn: một nút đăng nhập */
+          <Link
+            href={authHref("login", currentPath)}
+            title="Đăng nhập / Đăng ký"
+            className="flex items-center justify-center py-1 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
+          >
+            <div className="w-8 h-8 rounded-xl border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex items-center justify-center">
+              <LogIn className="w-3.5 h-3.5 text-zinc-500" />
+            </div>
+          </Link>
+        ) : (
+          /* Khách: thẻ mời đăng nhập */
+          <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-900/60 p-2.5">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex items-center justify-center shrink-0">
+                <User className="w-3.5 h-3.5 text-zinc-400" />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-[12px] font-bold text-zinc-900 dark:text-white leading-tight">Khách</span>
+                <span className="text-[10px] text-zinc-400 truncate">Đăng nhập để lưu, chat, đặt lịch</span>
+              </div>
+            </div>
+            <div className="mt-2.5 grid grid-cols-2 gap-1.5">
+              <Link
+                href={authHref("login", currentPath)}
+                className="h-8 rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-[11.5px] font-bold flex items-center justify-center no-underline hover:opacity-90 transition-opacity"
+              >
+                Đăng nhập
+              </Link>
+              <Link
+                href={authHref("register", currentPath)}
+                className="h-8 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-[11.5px] font-bold text-zinc-800 dark:text-zinc-100 flex items-center justify-center no-underline hover:border-zinc-900 dark:hover:border-white transition-colors"
+              >
+                Đăng ký
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Collapse Toggle */}
         <button

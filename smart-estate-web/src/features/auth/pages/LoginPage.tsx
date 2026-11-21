@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { authHref, safeNextPath } from "@/features/auth/context/AuthPromptContext";
 import { Mail, Lock, Eye, EyeOff, Building2, AlertCircle, Loader2 } from "lucide-react";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import type { UserRole } from "@/features/auth/types/auth.types";
@@ -20,6 +21,8 @@ export const LoginPage = () => {
   const router = useRouter();
   const pathname = usePathname();
   const isLogin = pathname.includes("/auth/login");
+  // Trang khách đang xem trước khi bị mời đăng nhập (?next=/properties/12)
+  const next = safeNextPath(useSearchParams().get("next"));
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,7 +36,8 @@ export const LoginPage = () => {
     setSubmitting(true);
     try {
       const user = await login(email, password);
-      router.push(ROLE_REDIRECT[user.role]);
+      // Người dùng quay lại trang đang xem; chủ trọ/admin về trang quản lý của mình
+      router.push(user.role === "user" && next ? next : ROLE_REDIRECT[user.role]);
     } catch (err) {
       setError(getErrorMessage(err));
       setSubmitting(false);
@@ -59,7 +63,7 @@ export const LoginPage = () => {
           style={{ transform: `translateX(${isLogin ? "0" : "calc(100% + 12px)"})` }}
         />
         <Link
-          href="/auth/login"
+          href={authHref("login", next)}
           className={`relative z-10 flex flex-1 items-center justify-center gap-1.5 py-2.5 text-[13px] font-semibold transition-all duration-200 no-underline ${
             isLogin ? "text-zinc-900 dark:text-white" : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400"
           }`}
@@ -67,7 +71,7 @@ export const LoginPage = () => {
           Đăng nhập
         </Link>
         <Link
-          href="/auth/register"
+          href={authHref("register", next)}
           className={`relative z-10 flex flex-1 items-center justify-center gap-1.5 py-2.5 text-[13px] font-semibold transition-all duration-200 no-underline ${
             !isLogin ? "text-zinc-900 dark:text-white" : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400"
           }`}
@@ -200,7 +204,7 @@ export const LoginPage = () => {
       <p className="text-center text-[12.5px] text-zinc-500 dark:text-zinc-400">
         Chưa có tài khoản?{" "}
         <Link
-          href="/auth/register"
+          href={authHref("register", next)}
           className="font-bold text-zinc-900 dark:text-white hover:underline no-underline transition-colors underline-offset-2 ml-1"
         >
           Đăng ký ngay

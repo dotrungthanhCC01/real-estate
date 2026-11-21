@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { authHref, safeNextPath } from "@/features/auth/context/AuthPromptContext";
 import { User, Mail, Lock, UserPlus, Building2, AlertCircle, Loader2 } from "lucide-react";
 import type { UserRole } from "@/features/auth/types/auth.types";
 import { useAuth } from "@/features/auth/context/AuthContext";
@@ -20,6 +21,7 @@ export const RegisterPage = () => {
   const router = useRouter();
   const pathname = usePathname();
   const isLogin = pathname.includes("/auth/login");
+  const next = safeNextPath(useSearchParams().get("next"));
 
   const [selectedRole, setSelectedRole] = useState<RegisterRole>("user");
   const [name, setName] = useState("");
@@ -39,7 +41,7 @@ export const RegisterPage = () => {
     setSubmitting(true);
     try {
       const user = await register({ fullName: name, email, password, role: selectedRole });
-      router.push(user.role === "landlord" ? "/landlord" : "/home");
+      router.push(user.role === "landlord" ? "/landlord" : (next ?? "/home"));
     } catch (err) {
       setError(getErrorMessage(err));
       setSubmitting(false);
@@ -68,7 +70,7 @@ export const RegisterPage = () => {
           style={{ transform: `translateX(${isLogin ? "0" : "calc(100% + 12px)"})` }}
         />
         <Link
-          href="/auth/login"
+          href={authHref("login", next)}
           className={`relative z-10 flex flex-1 items-center justify-center gap-1.5 py-2.5 text-[13px] font-semibold transition-all duration-200 no-underline ${
             isLogin ? "text-zinc-900 dark:text-white" : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400"
           }`}
@@ -76,7 +78,7 @@ export const RegisterPage = () => {
           Đăng nhập
         </Link>
         <Link
-          href="/auth/register"
+          href={authHref("register", next)}
           className={`relative z-10 flex flex-1 items-center justify-center gap-1.5 py-2.5 text-[13px] font-semibold transition-all duration-200 no-underline ${
             !isLogin ? "text-zinc-900 dark:text-white" : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400"
           }`}
@@ -208,7 +210,7 @@ export const RegisterPage = () => {
       <p className="text-center text-[12.5px] text-zinc-500 dark:text-zinc-400 mt-2">
         Đã có tài khoản?{" "}
         <Link
-          href="/auth/login"
+          href={authHref("login", next)}
           className="font-bold text-zinc-900 dark:text-white hover:underline no-underline transition-colors underline-offset-2 ml-1"
         >
           Đăng nhập ngay
