@@ -30,6 +30,11 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -62,6 +67,12 @@
   --input: #E5E0D8;
   --ring: #121212;
   --radius: 1.25rem;
+  /* Biểu đồ (shadcn chart): đen · vàng be · xám ấm — cùng tông web */
+  --chart-1: #121212;
+  --chart-2: #D9B26F;
+  --chart-3: #A8A29E;
+  --chart-4: #E5E0D8;
+  --chart-5: #78716C;
 }
 
 /* ─── Color Palette (Dark) ──────────────────────────────────────────────── */
@@ -84,6 +95,11 @@
   --border: #2A2A2A;
   --input: #2A2A2A;
   --ring: #F9F8F6;
+  --chart-1: #F9F8F6;
+  --chart-2: #D9B26F;
+  --chart-3: #78716C;
+  --chart-4: #3F3F46;
+  --chart-5: #A8A29E;
 }
 
 /* ─── Global Base Styles ────────────────────────────────────────────────── */

@@ -156,6 +156,8 @@ export const api = {
     apiClient.get<ApiEnvelope<T>, ApiEnvelope<T>>(url, config),
   post: <T>(url: string, body?: unknown, config?: AxiosRequestConfig) =>
     apiClient.post<ApiEnvelope<T>, ApiEnvelope<T>>(url, body, config),
+  patch: <T>(url: string, body?: unknown, config?: AxiosRequestConfig) =>
+    apiClient.patch<ApiEnvelope<T>, ApiEnvelope<T>>(url, body, config),
   put: <T>(url: string, body?: unknown, config?: AxiosRequestConfig) =>
     apiClient.put<ApiEnvelope<T>, ApiEnvelope<T>>(url, body, config),
   delete: <T>(url: string, config?: AxiosRequestConfig) =>
