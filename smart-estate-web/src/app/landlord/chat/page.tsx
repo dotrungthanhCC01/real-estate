@@ -1,5 +1,5 @@
-import { LandlordOverviewPage } from "@/features/landlord/pages/LandlordOverviewPage";
+import { ChatPage } from "@/features/chat/pages/ChatPage";
 
 export default function Page() {
-  return <LandlordOverviewPage />;
+  return <ChatPage />;
 }
