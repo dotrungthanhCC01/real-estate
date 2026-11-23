@@ -1,131 +1,159 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { useRouter } from "next/navigation";
-import { NavLink } from "@/components/common/NavLink";
-import {
-  LayoutDashboard, CreditCard, FileText, MessageSquare, LogOut,
-  Bell, Plus, Headphones, Wrench
-} from "lucide-react";
+import { useState, type ReactNode } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { Building2, Bell, Sun, Moon, Plus, LogOut, Home } from "lucide-react";
 import { useAuth } from "@/features/auth/context/AuthContext";
+import { useTheme } from "@/store/theme.context";
+import { PostListingProvider, usePostListing } from "@/features/landlord/context/PostListingContext";
+import { cn } from "@/lib/utils";
 
+// Các khu quản lý của chủ trọ
 const NAV_ITEMS = [
-  { label: "Dashboard", path: "/landlord", icon: LayoutDashboard, end: true },
-  { label: "Payments", path: "/landlord/payments", icon: CreditCard },
-  { label: "Listings", path: "/landlord/post", icon: FileText },
-  { label: "Maintenance", path: "/landlord/maintenance", icon: Wrench },
-  { label: "Messages", path: "/landlord/chat", icon: MessageSquare },
+  { label: "Tổng quan", href: "/landlord", exact: true },
+  { label: "Sản phẩm", href: "/landlord/rooms" },
+  { label: "Quản lý đăng tin", href: "/landlord/listings" },
+  { label: "Bảo trì", href: "/landlord/maintenance" },
+  { label: "Tin nhắn", href: "/landlord/chat" },
 ];
 
-export const LandlordLayout = ({ children }: { children: ReactNode }) => {
+const initials = (name = "") =>
+  name
+    .trim()
+    .split(/\s+/)
+    .slice(-2)
+    .map((w) => w[0]?.toUpperCase())
+    .join("");
+
+const IconButton = ({ children, label, onClick }: { children: ReactNode; label: string; onClick?: () => void }) => (
+  <button
+    type="button"
+    aria-label={label}
+    title={label}
+    onClick={onClick}
+    className="w-11 h-11 rounded-full bg-secondary hover:bg-accent text-foreground flex items-center justify-center transition-colors cursor-pointer"
+  >
+    {children}
+  </button>
+);
+
+/**
+ * Layout chủ trọ: thanh trên cùng (logo · menu dạng viên · công cụ), nội dung toàn chiều rộng.
+ * Màu theo token của web người dùng (globals.css): nền #F9F8F6, thẻ trắng, đen #121212.
+ */
+export const LandlordLayout = ({ children }: { children: ReactNode }) => (
+  <PostListingProvider>
+    <LandlordShell>{children}</LandlordShell>
+  </PostListingProvider>
+);
+
+const LandlordShell = ({ children }: { children: ReactNode }) => {
+  const { openPostListing } = usePostListing();
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const pathname = usePathname();
   const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    router.push("/auth/login");
-  };
-
-  const currentDate = new Date().toLocaleDateString('en-GB', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
-  });
+  const isActive = (href: string, exact?: boolean) => (exact ? pathname === href : pathname.startsWith(href));
 
   return (
-    <div className="min-h-screen w-full flex bg-[#F8F9FA] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
-      {/* ── Sidebar ── */}
-      <aside className="w-64 shrink-0 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#141417] min-h-screen flex flex-col p-4">
-        <div className="flex items-center gap-2 px-2 py-3 mb-6">
-          <div className="flex flex-col gap-0.5">
-            <div className="w-5 h-1 bg-zinc-900 dark:bg-white rounded-full"></div>
-            <div className="w-4 h-1 bg-zinc-900 dark:bg-white rounded-full"></div>
-            <div className="w-5 h-1 bg-zinc-900 dark:bg-white rounded-full"></div>
-          </div>
-          <h3 className="font-extrabold text-lg tracking-tight leading-none text-zinc-900 dark:text-white">
-            smart<br/>estate.
-          </h3>
-          <span className="ml-auto bg-zinc-100 dark:bg-zinc-800 text-[10px] font-bold px-2 py-1 rounded-md text-zinc-500 uppercase tracking-widest">
-            Landlord
-          </span>
-        </div>
+    <div className="min-h-screen w-full bg-background text-foreground">
+      {/* pt: tách header khỏi mép trên trang; pb: tách header khỏi nội dung */}
+      <header className="sticky top-0 z-40 bg-background/85 backdrop-blur-xl pt-5 pb-3">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 h-16 flex items-center gap-4">
+          {/* Logo */}
+          <Link href="/landlord" className="flex items-center gap-3 no-underline shrink-0">
+            <span className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center">
+              <Building2 className="w-5 h-5 text-foreground" />
+            </span>
+            <span className="hidden sm:block text-[18px] font-semibold tracking-tight text-foreground">
+              Smart Estate
+            </span>
+          </Link>
 
-        <button className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-[13px] font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors shadow-sm mb-6">
-          <Plus size={16} />
-          Create new listing
-        </button>
+          {/* Menu dạng viên */}
+          <nav className="flex-1 flex justify-center min-w-0">
+            <div className="flex items-center gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+              {NAV_ITEMS.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "px-5 h-11 rounded-full flex items-center text-[13.5px] font-medium whitespace-nowrap no-underline transition-colors",
+                    isActive(item.href, item.exact)
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-foreground hover:bg-accent",
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </nav>
 
-        <nav className="space-y-1 flex-1">
-          {NAV_ITEMS.map((item) => {
-            const Icon = item.icon;
-            return (
-              <NavLink
-                key={item.path}
-                href={item.path}
-                end={item.end}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition-all duration-150 ${
-                    isActive
-                      ? "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 font-semibold"
-                      : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
-                  }`
-                }
-              >
-                <Icon className="w-4 h-4 shrink-0" />
-                <span>{item.label}</span>
-                {item.label === "Messages" && (
-                  <span className="ml-auto w-4 h-4 rounded-full bg-pink-500 text-white text-[10px] font-bold flex items-center justify-center">3</span>
-                )}
-              </NavLink>
-            );
-          })}
-        </nav>
-
-        <div className="space-y-1 mt-auto pb-4">
-          <button className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-[13.5px] font-medium text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors">
-            <Headphones className="w-4 h-4" />
-            Support
-          </button>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-[13.5px] font-medium text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            Logout
-          </button>
-        </div>
-      </aside>
-
-      {/* ── Main content ── */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Topbar */}
-        <header className="h-20 bg-transparent px-8 flex items-center justify-between sticky top-0 z-40">
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-            {currentDate}
-          </h1>
-          <div className="flex items-center gap-5">
-            <button className="relative w-10 h-10 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-500 hover:bg-zinc-50 transition-colors shadow-sm">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-2 right-2.5 w-1.5 h-1.5 bg-red-500 rounded-full border border-white"></span>
+          {/* Công cụ */}
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={openPostListing}
+              className="flex items-center gap-1.5 px-4 h-11 rounded-full bg-primary text-primary-foreground text-[13px] font-semibold hover:opacity-90 cursor-pointer"
+            >
+              <Plus className="w-4 h-4" /> <span className="hidden md:inline">Đăng tin</span>
             </button>
-            <div className="flex items-center gap-3">
-              <span className="text-[13.5px] font-semibold text-zinc-800 dark:text-zinc-200">{user?.name}</span>
-              <div className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center overflow-hidden shrink-0 border border-zinc-200 dark:border-zinc-700">
-                {user?.avatar ? (
-                  <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-zinc-500 font-bold text-sm">{user?.name?.[0] ?? "U"}</span>
-                )}
-              </div>
+            <div className="hidden lg:flex items-center gap-2">
+              <IconButton label="Thông báo">
+                <Bell className="w-[18px] h-[18px]" />
+              </IconButton>
+            </div>
+            <IconButton label={theme === "dark" ? "Giao diện sáng" : "Giao diện tối"} onClick={toggleTheme}>
+              {theme === "dark" ? <Sun className="w-[18px] h-[18px]" /> : <Moon className="w-[18px] h-[18px]" />}
+            </IconButton>
+
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setMenuOpen((v) => !v)}
+                aria-label="Tài khoản"
+                className="w-11 h-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[13px] font-bold overflow-hidden cursor-pointer"
+              >
+                {user?.avatar ? <img src={user.avatar} alt="" className="w-full h-full object-cover" /> : initials(user?.name)}
+              </button>
+              {menuOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
+                  <div className="absolute right-0 mt-2 z-20 w-60 rounded-2xl border border-border bg-popover p-2 shadow-xl">
+                    <div className="px-3 py-2">
+                      <p className="text-[13px] font-semibold text-foreground truncate">{user?.name}</p>
+                      <p className="text-[11.5px] text-muted-foreground truncate">{user?.email}</p>
+                    </div>
+                    <Link
+                      href="/home"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-[13px] text-foreground hover:bg-secondary no-underline"
+                    >
+                      <Home className="w-4 h-4" /> Về trang người thuê
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        logout();
+                        router.push("/auth/login");
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-[13px] text-red-600 dark:text-red-400 hover:bg-secondary cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4" /> Đăng xuất
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
-        </header>
+        </div>
+      </header>
 
-        <main className="flex-1 px-8 pb-8 overflow-y-auto">
-          {children}
-        </main>
-      </div>
+      <main className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-3 pb-10">{children}</main>
     </div>
   );
 };

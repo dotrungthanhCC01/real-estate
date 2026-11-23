@@ -13,9 +13,15 @@ interface CustomSelectProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
-  /** Hướng mở danh sách: "bottom" (mặc định) hoặc "top" khi ô nằm sát đáy khung */
-  placement?: "bottom" | "top";
+  /**
+   * Hướng mở danh sách: "bottom" (mặc định), "top", hoặc "auto" — đủ chỗ phía dưới màn hình
+   * thì mở xuống, không đủ thì mở lên.
+   */
+  placement?: "bottom" | "top" | "auto";
 }
+
+const LIST_MAX_HEIGHT = 240; // = max-h-60
+const OPTION_HEIGHT = 36;
 
 export const CustomSelect: React.FC<CustomSelectProps> = ({
   options,
@@ -26,7 +32,20 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   placement = "bottom",
 }) => {
   const [open, setOpen] = useState(false);
+  const [autoDir, setAutoDir] = useState<"bottom" | "top">("bottom");
   const ref = useRef<HTMLDivElement>(null);
+  const dir = placement === "auto" ? autoDir : placement;
+
+  const toggle = () => {
+    if (!open && placement === "auto" && ref.current) {
+      // Đo chỗ trống phía dưới / trên ô so với khung nhìn trước khi mở
+      const rect = ref.current.getBoundingClientRect();
+      const listHeight = Math.min(LIST_MAX_HEIGHT, options.length * OPTION_HEIGHT + 12) + 8;
+      const below = window.innerHeight - rect.bottom;
+      setAutoDir(below < listHeight && rect.top > below ? "top" : "bottom");
+    }
+    setOpen((prev) => !prev);
+  };
 
   const selectedOption = options.find((opt) => opt.value === value);
 
@@ -44,7 +63,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
     <div ref={ref} className={cn("relative w-full text-left", className)}>
       <button
         type="button"
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={toggle}
         className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-md bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700/80 text-[13px] font-medium text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all outline-none"
       >
         <span className="truncate">
@@ -61,7 +80,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
       {open && (
         <div className={cn(
             "absolute left-0 right-0 max-h-60 overflow-y-auto rounded-lg bg-white dark:bg-[#18181c] border border-zinc-200 dark:border-zinc-700/80 shadow-2xl z-50 p-1.5 animate-in fade-in duration-150",
-            placement === "top" ? "bottom-full mb-1.5 slide-in-from-bottom-1" : "top-full mt-1.5 slide-in-from-top-1"
+            dir === "top" ? "bottom-full mb-1.5 slide-in-from-bottom-1" : "top-full mt-1.5 slide-in-from-top-1"
           )}
         >
           {options.map((opt) => {
